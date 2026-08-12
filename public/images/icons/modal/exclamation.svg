@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="SVGAlertkMark" viewBox="-240 331.8 130.2 130.2">
+    <style>
+        .svg-exclamation-line, .svg-exclamation-circle, .svg-exclamation-outline{
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 0;
+            stroke: #2091eb;
+            stroke-width: 6;
+            fill: none;
+        }
+        .svg-exclamation-line {
+            stroke-linecap: round;
+            stroke-dashoffset: 1000;
+            stroke-width: 8;
+            animation: dash .9s .35s ease-in-out forwards;
+        }
+        .svg-exclamation-circle{
+            stroke-dashoffset: -100;
+            animation: scale .3s ease-in-out .4s both;
+        }
+        .svg-exclamation-outline{
+            animation: dash .9s ease-in-out;
+        }
+        @keyframes dash {/*moving from start to End*/
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes scale {
+            0% { transform: none; }
+            100% { fill:#2091eb; transform: scale(1, 1, 1); }
+        }
+    </style>
+    <path class="svg-exclamation-line" d="M-174.7,367.9v35.2"/>
+    <circle class="svg-exclamation-circle" cx="-174.5" cy="423.8" r="4.5"/>
+    <circle class="svg-exclamation-outline" cx="-174.5" cy="396.5" r="50"/>
+</svg>

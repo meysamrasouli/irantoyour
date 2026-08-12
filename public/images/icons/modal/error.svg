@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 130.2 130.2">
+    <style>
+        .svg-exclamation-line, .svg-exclamation-outline{
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 0;
+            stroke-miterlimit: 10;
+            stroke: #e74c3c;
+            stroke-width: 6;
+            fill: none;
+        }
+        .svg-exclamation-line {
+            stroke-dashoffset: 1000;
+            stroke-linecap: round;
+            animation: dash .9s .35s ease-in-out forwards;
+        }
+        .svg-exclamation-outline{
+            animation: dash .9s ease-in-out;
+        }
+        @keyframes dash {/*moving from start to End*/
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+    <line class="svg-exclamation-line" x1="34.4" y1="37.9" x2="95.8" y2="92.3"/>
+    <line class="svg-exclamation-line" x1="95.8" y1="38" x2="34.4" y2="92.2"/>
+    <circle class="svg-exclamation-outline" cx="65" cy="65" r="62"/>
+</svg>

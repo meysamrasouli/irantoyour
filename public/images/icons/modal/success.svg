@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 130.2 130.2" >
+    <style type="text/css">
+        .svc-check-outLine, .svc-check-tick{
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 0;
+            stroke-miterlimit: 10;
+            stroke-width: 6;
+            stroke: #7ccc63;
+            fill:none;
+        }
+        .svc-check-tick {
+            stroke-linecap: round;
+            stroke-dashoffset: -100;
+            animation: dash-check .9s .35s ease-in-out forwards;
+        }
+        .svc-check-outLine{
+            animation: dash .9s ease-in-out;
+        }
+        @keyframes dash {/*moving from start to End*/
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes dash-check {/*moving from End to Start*/
+            0% { stroke-dashoffset: -100; }
+            100% { stroke-dashoffset: 900; }
+        }
+    </style>
+    <polyline class="svc-check-tick" points="100.2,40.2 51.5,88.8 29.8,67.5 "/>
+    <circle class="svc-check-outLine" cx="65" cy="65" r="62"/>
+</svg>

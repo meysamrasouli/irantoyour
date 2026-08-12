@@ -26,6 +26,14 @@ class HandleInertiaRequests extends Middleware
         return parent::version($request);
     }
 
+    public function rootView(Request $request): string{
+        if (str_contains($request->path(), 'dashboard'))
+            return 'dashboard';
+        if (str_contains($request->path(), 'profile'))
+            return 'profile';
+        return 'website';
+    }
+
     /**
      * Define the props that are shared by default.
      *
@@ -37,7 +45,9 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            'auth' => [
+                'user' => $request->user(),
+            ],
         ];
     }
 }

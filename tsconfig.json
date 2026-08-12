@@ -7,11 +7,11 @@
         "jsx": "react-jsx",
         "strict": true,
         "baseUrl": ".",
+        "types": ["vite/client"],
         "paths": {
             "@/*": ["resources/js/*"],
             "@scss/*": ["resources/scss/*"]
-        },
-        "types": ["vite/client"]
+        }
     },
     "include": ["resources/js/**/*"]
 }
