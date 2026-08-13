@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { zustandStore, NotificationMode, NotificationInputInterface } from "@/shared/store/zustandStore";
+import { zustandStore } from "@/shared/store/zustandStore";
 
+export type NotificationMode = 'success' | 'warning' | 'error' | 'info';
+export interface NotificationInputInterface {// used in zustand store
+    mode: NotificationMode;
+    text: string;
+}
 interface NotificationItemInterface extends NotificationInputInterface {
     key: number;
     icon: string;

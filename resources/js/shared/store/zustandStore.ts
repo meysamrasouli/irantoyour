@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { BreadcrumbInputInterface } from '@/components/ui/arc_breadcrumb'
+import { NotificationInputInterface } from '@/components/ui/arc_notification'
 
 interface zustandStoreInterface {
     breadcrumb: BreadcrumbInputInterface[];
@@ -9,18 +11,6 @@ interface zustandStoreInterface {
 
     overlayLoading: boolean;
     updateOverlayLoading: (payload: boolean) => void;
-}
-
-//------------------------------| breadcrumb
-export interface BreadcrumbInputInterface {
-    text: string;
-    url?: string;
-}
-//------------------------------| notification
-export type NotificationMode = 'success' | 'warning' | 'error' | 'info';
-export interface NotificationInputInterface {
-    mode: NotificationMode;
-    text: string;
 }
 
 export const zustandStore = create<zustandStoreInterface>()((set) => ({

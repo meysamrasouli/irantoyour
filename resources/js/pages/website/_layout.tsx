@@ -1,29 +1,45 @@
-import Navbar from './_navbar'
 import * as React from "react";
+import {useState} from "react";
 import {Link} from "@inertiajs/react";
-import {zustandStore} from "@/shared/store/zustandStore";
-import ArcNotification from '@/components/ui/arc_notification'
+import Navbar from './_navbar'
+import ArcSelect from "@/components/ui/arc_select";
+import AvcOverlayLoading from "@/components/ui/arc_overlay";
 
 interface Props {
     children: React.ReactNode
 }
 export default function Layout({ children }: Props) {
-    let overlayLoading = zustandStore(state => state.overlayLoading)
+    let [province, setProvince] = useState('')
+    let list_province = [{id:1,name:"tehran"},{id:2,name:"karaj"}]
 
-
-
-    let updateNotification = zustandStore(state => state.updateNotification)
     function onclick_btn (){
         console.log("sdfsdf")
-        updateNotification({mode: 'success', text: 'heyyyyy'})
+
     }
+
+
 
     return (
         <>
-            { overlayLoading && <div className="overlay overlay-loading">LOADING ...</div> }
+            <AvcOverlayLoading />
+
+
 
             <button onClick={ onclick_btn }>loading on</button>
-            <ArcNotification />
+            <ArcSelect
+                options={list_province}
+                option_properties={{ type: 'array_object', value: 'id', text: 'name' }}
+                value={province}
+                setValue={setProvince}
+                onChange={(val) => console.log('changed:', val)}
+                placeholder={'select your province'}
+                //selected={{value: 1}}
+            />
+
+
+
+
+
 
             <header>
                 <div className="middle">

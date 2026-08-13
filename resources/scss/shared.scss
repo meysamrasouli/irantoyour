@@ -629,6 +629,113 @@ a[class*="custom-button"]{
     }
 }
 //==================================================| Advanced React Component |==================================================\\
+//==============================| select
+.arc-select{
+    width: 100%;
+    position: relative;
+
+    .arc-select-input-wrapper{
+        position: relative;
+
+        &:after{// down arrow
+            content: "\f078";
+            font-family: "Font Awesome 6 Pro";
+            font-size: 10px;
+            font-weight: 900;
+            position: absolute;
+            top: 15px;
+            left: 10px;
+        }
+        input{
+            width: 100%;
+
+            &[readonly]{
+                user-select: none;
+                cursor: pointer;
+                &::selection{ background-color: transparent; }
+            }
+        }
+    }
+    .arc-select-multiple{
+        min-height: 75px;
+        padding: 5px;
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        background-color: $color-bg-0;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2) inset;
+
+        li{
+            height: 30px;
+            line-height: 30px;
+            padding: 0 5px 0 25px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: $color-primary;
+            color: #fff;
+            font-size: 12px;
+
+            &:before{
+                content: "\f00d";
+                font-family: "Font Awesome 6 Pro";
+                font-weight: 900;
+                line-height: 20px;
+                text-align: center;
+                position: absolute;
+                top: 0;
+                left: 4px;
+            }
+            &:last-child{ margin-left: 7px; }
+        }
+    }
+
+    .arc-select-option{
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
+        border-radius: 0 0 5px 5px;
+        box-shadow: 0 0 5px #000;
+        z-index: 10;
+        transition: all 0.15s ease-in;
+
+        &.arc-select-slide-in{
+            max-height: 250px;
+        }
+        &.arc-select-slide-out{
+            max-height: 0;
+        }
+        ul{
+            max-height: 250px;
+            overflow: auto;
+            background-color: $color-bg-0;
+
+            li{
+                padding: 7px 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+                user-select: none;
+
+                &.arc-select-selectedOption{ background-color: $color-primary-light; }
+                &:hover { background-color: $color-primary-lightest; }
+                &.arc-select-selected{ background-color: $color-primary!important; }
+                input{
+                    width: auto;
+                    height: auto;
+                }
+                span:not([title=""]):after{
+                    content: "(" attr(title) ")";
+                    margin-right: 5px;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}
+
 //==============================| datatable
 .arc-datatable{
     display: flex;

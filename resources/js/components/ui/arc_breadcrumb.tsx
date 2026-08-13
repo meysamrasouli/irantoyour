@@ -2,6 +2,11 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { zustandStore } from '@/shared/store/zustandStore';
 
+export interface BreadcrumbInputInterface {// used in zustand store
+    text: string;
+    url?: string;
+}
+
 export default function AvcBreadcrumb() {
     const breadcrumb = zustandStore((state) => state.breadcrumb);
 
