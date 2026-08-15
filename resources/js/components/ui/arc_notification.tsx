@@ -22,7 +22,7 @@ const ICONS: Record<NotificationMode, string> = {
 };
 let idCounter = 0;
 
-export default function AvcNotification({ lifespan = 3 }: PropsInterface) {
+export default function ArcNotification({ lifespan = 3 }: PropsInterface) {
     const [messages, setMessages] = useState<NotificationItemInterface[]>([]);
     const timers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 

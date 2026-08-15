@@ -229,12 +229,12 @@ export function validate(
              */
             case 'integer_limit': {
                 if (!conditionParam) break
-                const IntegerLimitParamInterface = conditionParam as IntegerLimitParamInterface
+                const IntegerLimitParam = conditionParam as IntegerLimitParamInterface
                 const numericValue = parseInt(convertToEnglishDigits(data))
                 error =
                     validate(data, ['notEmpty']) &&
-                    !(numericValue >= parseInt(String(IntegerLimitParamInterface.min)) && numericValue <= parseInt(String(IntegerLimitParamInterface.max)))
-                errorMessage = validateErrorMessages.integer_limit(IntegerLimitParamInterface.min, IntegerLimitParamInterface.max)
+                    !(numericValue >= parseInt(String(IntegerLimitParam.min)) && numericValue <= parseInt(String(IntegerLimitParam.max)))
+                errorMessage = validateErrorMessages.integer_limit(IntegerLimitParam.min, IntegerLimitParam.max)
                 break
             }
 

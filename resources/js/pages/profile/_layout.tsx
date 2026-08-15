@@ -3,8 +3,8 @@ import {Link} from "@inertiajs/react";
 import {zustandStore} from "@/shared/store/zustandStore";
 import Navbar from './_navbar'
 import ArcNotification from '@/components/ui/arc_notification'
-import AvcSelect from "@/components/ui/arc_select";
-import AvcOverlayLoading from "@/components/ui/arc_overlay";
+import ArcSelect from "@/components/ui/arc_select";
+import ArcOverlayLoading from "@/components/ui/arc_overlay";
 
 interface Props {
     children: React.ReactNode
@@ -16,7 +16,7 @@ export default function Layout({ children }: Props) {
 
     return (
         <>
-            <AvcOverlayLoading />
+            <ArcOverlayLoading />
             <ArcNotification />
 
             <header></header>

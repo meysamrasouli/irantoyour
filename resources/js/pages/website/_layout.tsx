@@ -3,7 +3,7 @@ import {useState} from "react";
 import {Link} from "@inertiajs/react";
 import Navbar from './_navbar'
 import ArcSelect from "@/components/ui/arc_select";
-import AvcOverlayLoading from "@/components/ui/arc_overlay";
+import ArcOverlayLoading from "@/components/ui/arc_overlay";
 
 interface Props {
     children: React.ReactNode
@@ -21,7 +21,7 @@ export default function Layout({ children }: Props) {
 
     return (
         <>
-            <AvcOverlayLoading />
+            <ArcOverlayLoading />
 
 
 

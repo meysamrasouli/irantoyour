@@ -7,7 +7,7 @@ export interface BreadcrumbInputInterface {// used in zustand store
     url?: string;
 }
 
-export default function AvcBreadcrumb() {
+export default function ArcBreadcrumb() {
     const breadcrumb = zustandStore((state) => state.breadcrumb);
 
     return (

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from '@inertiajs/react';
 import { zustandStore } from "@/shared/store/zustandStore";
-import { validate } from "@/shared/utils/validationUtils"
+import { validate, ValidationConditionType } from "@/shared/utils/validationUtils"
 
 interface SubmitDetail {
     method: 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -23,39 +23,67 @@ export function useFormHandler<T extends Record<string, any>>(initialValues: T) 
     // handling server validation error
     useEffect(() => {
         const errors = form.errors;
+        if (!errors || Object.keys(errors).length === 0) return;
 
-        if (errors && Object.keys(errors).length > 0) {
-            const newFormErrors: Record<string, string> = {};
-
-            if (validate(errors, ['notEmpty_object'])) {
-                for (const index in errors) {
-                    const errorMsg = errors[index];
-                    if (index.includes(".")) {// تبدیل خطاها مثلاً address.province
-                        newFormErrors[index] = errorMsg.replace(index, 'قرمز رنگ');
-                    } else {
-                        newFormErrors[index] = errorMsg;
-                    }
-
-                    updateNotification({mode: 'error', text: newFormErrors[index]});
-                }
-            }
-            setFormError(newFormErrors);
+        const newFormErrors: Record<string, string> = {};
+        for (const [index, errorMsg] of Object.entries(errors)) {
+            newFormErrors[index] = errorMsg as string;
         }
+
+        setFormError(newFormErrors);
+        updateNotification({ mode: 'error', text: 'لطفاً خطاهای فرم را بررسی کنید' });
     }, [form.errors]);
 
+    /**
+     * @function validateField
+     * @param index
+     * @param conditions
+     * @param options.customError
+     * @param options.value
+     * @return string
+     */
+    const validateField = useCallback((
+        index: string,
+        conditions: ValidationConditionType[],
+        options?: { customError?: string; value?: unknown }
+    ): string => {
+        const value = options && 'value' in options ? options.value : (form.data as Record<string, any>)[index];
+        const errorMessage = validate(value, conditions, true, options?.customError);
 
+        setFormError((prev) => {
+            if (!errorMessage) {
+                if (!(index in prev)) return prev; // nothing changed, prevert form re-rendering
+                const next = { ...prev };
+                delete next[index];
+                return next;
+            }
+            return { ...prev, [index]: errorMessage };
+        });
+
+        return errorMessage;
+    }, [form.data]);
+
+    /**
+     * @param submitDetail
+     * @param inputValidatorFunction
+     */
     const formSubmit = (
         submitDetail: SubmitDetail,
-        inputValidatorFunction?: (index: string) => void
+        inputValidatorFunction?: (index: string) => string | null | undefined
     ) => {
         let allowSubmit = true;
 
         if (typeof inputValidatorFunction === 'function') {
+            const newFormErrors: Record<string, string> = {};
+
             for (const index in form.data) {
-                inputValidatorFunction(index);
+                const errorMessage = inputValidatorFunction(index);
+                if (errorMessage) newFormErrors[index] = errorMessage;
             }
 
-            if (validate(formError, ['notEmpty_object'])) {
+            setFormError(newFormErrors);
+
+            if (validate(newFormErrors, ['notEmpty_object'])) {
                 allowSubmit = false;
             }
         }
@@ -76,7 +104,7 @@ export function useFormHandler<T extends Record<string, any>>(initialValues: T) 
                 onSuccess: () => {},
                 onError: (errors) => { console.log(errors) },
                 onFinish: () => {
-                    updateOverlayLoading(true);// hide loading overlay
+                    updateOverlayLoading(false);// hide loading overlay
                 }
             });
         }
@@ -85,6 +113,7 @@ export function useFormHandler<T extends Record<string, any>>(initialValues: T) 
     return {
         form,
         formError,
+        validateField,
         formSubmit,
     };
 }

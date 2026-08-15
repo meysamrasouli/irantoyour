@@ -105,7 +105,7 @@ function componentOptionMaker(
             (options as any[]).forEach((option) => {
                 // append
                 value = appendValue ? `${option[valField]} ${appendValue}` : option[valField];
-                text = appendValue ? `${option[textField]} ${appendValue}` : option[textField];
+                text = appendText ? `${option[textField]} ${appendText}` : option[textField];
 
                 result.push({
                     value: !isNaN(value) && value !== '' ? parseInt(value) : String(value),

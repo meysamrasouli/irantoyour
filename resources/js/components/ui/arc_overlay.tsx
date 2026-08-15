@@ -1,7 +1,7 @@
 import React from 'react';
 import { zustandStore } from '@/shared/store/zustandStore';
 
-export default function AvcOverlayLoading() {
+export default function ArcOverlayLoading() {
     let overlayLoading = zustandStore(state => state.overlayLoading)
 
     return (
