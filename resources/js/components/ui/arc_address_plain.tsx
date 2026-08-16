@@ -55,12 +55,13 @@ export default function AddressPickerModal({ open, onClose, onConfirm, initialVa
     return (
         <ArcModal
             open={open}
-            onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}
+            setOpen={(nextOpen) => { if (!nextOpen) onClose(); }}
             header="انتخاب آدرس"
             buttons={[
-                { text: 'انصراف', style: 'close', onClick: onClose },
-                { text: 'تأیید', style: 'button', onClick: onClickConfirm },
+                { text: 'انصراف', className: 'custom-button-trans-primary', onClick: onClose },
+                { text: 'تأیید', className: 'custom-button', onClick: onClickConfirm },
             ]}
+            buttonClose={false}
         >
             <div className="form-group">
                 <label htmlFor="province">استان</label>

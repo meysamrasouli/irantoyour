@@ -9,38 +9,9 @@ interface Props {
     children: React.ReactNode
 }
 export default function Layout({ children }: Props) {
-    let [province, setProvince] = useState('')
-    let list_province = [{id:1,name:"tehran"},{id:2,name:"karaj"}]
-
-    function onclick_btn (){
-        console.log("sdfsdf")
-
-    }
-
-
-
     return (
         <>
             <ArcOverlayLoading />
-
-
-
-            <button onClick={ onclick_btn }>loading on</button>
-            <ArcSelect
-                options={list_province}
-                option_properties={{ type: 'array_object', value: 'id', text: 'name' }}
-                value={province}
-                setValue={setProvince}
-                onChange={(val) => console.log('changed:', val)}
-                placeholder={'select your province'}
-                //selected={{value: 1}}
-            />
-
-
-
-
-
-
             <header>
                 <div className="middle">
                     <Link href="/" className="logo">
@@ -50,13 +21,15 @@ export default function Layout({ children }: Props) {
 
                     <Navbar />
 
-                    <div className="user-detail">
-                        <a href="/login" className="custom-button">
-                            <span>ورود</span><i className="fa-regular fa-sign-in icon-left"></i>
-                        </a>
-
-                        <div>
-                            <a><i className="fa-regular fa-regular"></i></a>
+                    <div className="user-menu-wrapper">
+                        <div className="viewer-menu">
+                            <a href="/login" className="custom-button-trans-text">
+                                <span>ورود</span><i className="fa-regular fa-sign-in icon-left"></i>
+                            </a>
+                            <Link href="/register" className="custom-button">عضویت</Link>
+                        </div>
+                        <div className="user-menu">
+                            <a><i className="fa-regular fa-user"></i></a>
                             <ul>
                                 <li>
                                     <a href="/profile"><i className="fa-regular fa-user"></i><span>حساب کاربری</span></a>
@@ -77,7 +50,16 @@ export default function Layout({ children }: Props) {
                     <div className="middle">
                         <div className="about">
                             <img src="/images/logo/logo.png" alt="APP_NAME_FA" />
-                            <p>ایران طیور یک پلتفورم پیشرو برای ثبت آگهی در صنعت طیور ایران است. ایران طیور شما را در جریان آخرین معاملات کل کشور قرار می دهد.</p>
+                            <p>ایران طیور با بهره‌گیری از تکنولوژی روز دنیا و تلفیق آن با نیازهای بومی صنعت مرغداری کشور، پلتفورمی پیشرو، امن و سریع برای ثبت آگهی در صنعت طیور ایران ایجاد نموده تا شما را در جریان آخرین معاملات کل کشور قرار دهد.</p>
+                        </div>
+
+                        <div className="quick-link">
+                            <span>دسترسی سریع</span>
+                            <ul>
+                                <li><Link href="/about">درباره ما</Link></li>
+                                <li><Link href="/term">قوانین و مقررات</Link></li>
+                                <li><Link href="/contact">تماس با ما</Link></li>
+                            </ul>
                         </div>
 
                         <div className="social-media">

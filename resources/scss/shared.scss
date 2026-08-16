@@ -1,17 +1,17 @@
 //==================================================| Variables |==================================================\\
 //==============================| Color
-$color-primary-lightest: #22d3bb;
-$color-primary-light: #168676;
-$color-primary: #0E584D;
-$color-primary-dark: #093a32;
-$color-primary-darkest: #062a26;
-$color-primary-bg: #E1F5EE;
+$color-primary-lightest: #FFDDB8;
+$color-primary-light: #FFB95F;
+$color-primary: #F59E0B;
+$color-primary-dark: #EE9800;
+$color-primary-darkest: #A76A00;
+$color-primary-bg: #FFEEDE;
 
-$color-secondary-lightest: #ffe079;
-$color-secondary-light: #f6c71b;
-$color-secondary: #f98c02;
-$color-secondary-dark: #967708;
-$color-secondary-darkest: #524104;
+$color-secondary-lightest: #3C475A;
+$color-secondary-light: #263143;
+$color-secondary: #1E293B;
+$color-secondary-dark: #111C2D;
+$color-secondary-darkest: #000000;
 
 // General Color
 $color-green-bg: #d1fadf;
@@ -338,6 +338,20 @@ a[class*="custom-button"]{
 }
 //------------------------------| transparent text
 [class*="custom-button-trans-text"], [class*="custom-icon-trans-text"]{
+    background-color: transparent;
+    border: solid 1px transparent;
+
+    &:hover{
+        color: $color-primary;
+        border-color: $color-primary;
+    }
+    &:active{
+        color: #fff;
+        background-color: $color-primary;
+    }
+}
+//------------------------------| transparent text
+[class*="custom-button-trans-primary-text"], [class*="custom-icon-trans-primary-text"]{
     color: $color-primary;
     background-color: transparent;
     border: solid 1px transparent;
@@ -350,8 +364,8 @@ a[class*="custom-button"]{
         background-color: $color-primary;
     }
 }
-//------------------------------| transparent normal
-.custom-button-trans, .custom-icon-trans{
+//------------------------------| transparent primary
+.custom-button-trans-primary, .custom-icon-trans-primary{
     color: $color-primary;
     border: solid 1px $color-primary;
 
