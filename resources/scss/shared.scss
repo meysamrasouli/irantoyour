@@ -979,7 +979,7 @@ a[class*="custom-button"]{
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 
-    li{
+    & > li{
         padding-bottom: 20px;
         display: flex;
         flex-direction: column;
@@ -992,7 +992,6 @@ a[class*="custom-button"]{
 
         &:hover{
             border-color: $color-primary-lightest;
-            box-shadow: $box-shadow-primary-01;
 
             .plan-title, button{
                 background-color: $color-primary-lightest;
@@ -1002,7 +1001,6 @@ a[class*="custom-button"]{
         }
         &.active{
             border-color: $color-primary;
-            box-shadow: $box-shadow-primary-01;
 
             .plan-title, button{
                 background-color: $color-primary-dark;
@@ -1027,6 +1025,18 @@ a[class*="custom-button"]{
             padding: 0 10px;
             color: $color-text-02;
             font-size: $font-sm;
+
+            li{
+                text-align: right;
+
+                &:before{
+                    content: "\f00c";
+                    margin-left: 10px;
+                    font-family: "Font Awesome 6 Pro";
+                    color: $color-green;
+                    font-weight: bold;
+                }
+            }
         }
         button{
             margin: 0 10px;

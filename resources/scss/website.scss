@@ -27,6 +27,19 @@
         text-align: center;
     }
 }
+.page-detail{
+    padding: 60px 0;
+
+    h1{
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    .page-description{
+        max-width: 60%;
+        margin: 0 auto;
+        text-align: center;
+    }
+}
 //==================================================| Layout |==================================================\\
 body #app{
     & > header{
@@ -274,3 +287,14 @@ main.index{
 //==================================================| Contact
 //==================================================| Term
 //==================================================| Register
+main.register{
+    section.user-register{
+        .step-form{
+            padding: 20px 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            //background-color: rgba(red, 0.1);
+        }
+    }
+}

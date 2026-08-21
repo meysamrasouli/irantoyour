@@ -4,12 +4,14 @@ import ArcMembershipPlan, {PlanInterface} from "@/components/ui/arc_membershipPl
 import {useEffect, useState} from "react";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
 import {useFormHandler} from "@/shared/hooks/useFormSubmit";
+import UserDetail from "@/components/website/register/userDetail";
+import * as React from "react";
 
 interface ControllerPropsInterface {
     list_plan: PlanInterface[],
     pageDetail: object,
 }
-interface FormDataInterface {
+export interface FormDataInterface {
     membershipPlan: number;
     mobile: string;
     national_code: string;
@@ -17,9 +19,9 @@ interface FormDataInterface {
     last_name: string;
 }
 
-export default function Register(
-    controllerProps: ControllerPropsInterface,
-) {
+export default function Register(controllerProps: ControllerPropsInterface) {
+    const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید نهایی']// step progress
+    const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
         membershipPlan: 0,
         mobile: '',
@@ -27,71 +29,99 @@ export default function Register(
         first_name: '',
         last_name: '',
     });
-    const onChangeInput = (
-        inputName: keyof FormDataInterface,
-    ): string | null => {
-        switch (inputName) {
-            case 'mobile':
-                return validateField('mobile', ['notEmpty', 'mobile']);
-            case 'national_code':
-                return validateField('mobile', ['notEmpty', 'national_code!']);
-            case 'first_name':
-            case 'last_name':
-                return validateField('mobile', ['notEmpty', 'mobile']);
-            default:
-                return null;
-        }
-    };
-
-    const progressStepList: string[] = ['اطلاعات کاربری', 'انتخاب پلن', 'تایید نهایی']// step progress
-    const [step, setStep] = useState<number>(0)// step form
-    const [membershipPlan, setMembershipPlan] = useState<number>(0);
+    // const onSubmit = (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     formSubmit({ method: 'put', action: `/categories/${category.id}` }, (index) => {
+    //         const rules = validationRules[index as keyof CategoryFormData];
+    //         return rules ? validateField(index, rules) : null;
+    //     });
+    // };
 
     //==============================| Event
     const onclick_nextStep = () => {
-        setStep((step < progressStepList.length-1) ? step+1 : progressStepList.length-1)
+        setProgressStepIndex((progressStepIndex < progressStepList.length-1) ? progressStepIndex+1 : progressStepList.length-1)
     }
     const onclick_previousStep = () => {
-        setStep((step > 0) ? step-1 : 0)
+        setProgressStepIndex((progressStepIndex > 0) ? progressStepIndex-1 : 0)
     }
 
-
+    const selectedPlan = controllerProps.list_plan.find(
+        (item) => item.id === form.data.membershipPlan
+    );
 
     return (
         <>
-            <Head title="پلن های اشتراک" />
+            <Head title="ثبت نام" />
             <Layout>
-                <main className="register-plan">
-                    <section className="plan">
+                <main className="register">
+                    <section className="user-register">
                         <div className="middle">
-                            <div className="section-detail">
-                                <h1>پلن های اشتراک</h1>
+                            <div className="page-detail">
+                                <h1>ثبت نام</h1>
+                                <p className="page-description">به خانواده بزرگ ایران طیور بپیوندید</p>
                             </div>
 
                             <div className="step-form">
-                                <ArcProgressStep value={step} steps={progressStepList}/>
+                                <ArcProgressStep value={progressStepIndex} steps={progressStepList}/>
 
                                 <ul className="step-container">
-                                    {step === 0 && (
+                                    {progressStepIndex === 0 && (
                                         <li>
-                                            <ArcMembershipPlan value={membershipPlan} setValue={setMembershipPlan} plans={controllerProps.list_plan} />
+                                            <div className="section-detail">
+                                                <h2>انتخاب <span className="accent-text">طرح اشتراک</span></h2>
+                                                <p className="section-description">برای دسترسی به امکانات سامانه، یکی از  طرح های اشتراک زیر را انتخاب کنید.</p>
+                                            </div>
+                                            <ArcMembershipPlan
+                                                value={form.data.membershipPlan}
+                                                setValue={(value) => form.setData('membershipPlan', value)}
+                                                plans={controllerProps.list_plan}
+                                            />
                                         </li>
                                     )}
-                                    {step === 1 && (
+                                    {progressStepIndex === 1 && (
                                         <li>
-
+                                            <div className="section-detail">
+                                                <h2>ثبت <span className="accent-text">اطلاعات کاربری</span></h2>
+                                                <p className="section-description">اطلاعات کاربری را برای استفاده از در سامانه به دقت وارد کنید.</p>
+                                            </div>
+                                            <UserDetail form={form} formError={formError} validateField={validateField} />
                                         </li>
                                     )}
-                                    {step === 2 && (
+                                    {progressStepIndex === 2 && (
                                         <li>
-
+                                            <table>
+                                                <tbody>
+                                                <tr>
+                                                    <th>شماره موبایل</th><td>{ form.data.mobile }</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>نام</th><td>{ form.data.first_name }</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>نام خانوادگی</th><td>{ form.data.last_name }</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>کدملی</th><td>{ form.data.national_code }</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>پلن انتخابی</th><td>
+                                                    {selectedPlan ? `اشتراک ${selectedPlan.detail.duration} ` : 'پلنی انتخاب نشده است'}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
                                         </li>
                                     )}
                                 </ul>
 
                                 <div className="button-container">
-                                    <button type="button" className="custom-button-primary" onClick={()=>onclick_nextStep()}>بعدی</button>
-                                    <button type="button" className="custom-button-trans-text" onClick={()=>onclick_previousStep()}>قبلی</button>
+                                    {progressStepIndex < progressStepList.length - 1 ? (
+                                        <button type="button" className="custom-button-primary" onClick={()=>onclick_nextStep()}>بعدی</button>
+                                    ) : (
+                                        <button type="button" className="custom-button-primary" onClick={() => formSubmit}>ثبت نهایی و پرداخت</button>
+                                    )}
+                                    {progressStepIndex > 0 && (
+                                        <button type="button" className="custom-button-trans-text" onClick={onclick_previousStep}>قبلی</button>
+                                    )}
                                 </div>
                             </div>
                         </div>
