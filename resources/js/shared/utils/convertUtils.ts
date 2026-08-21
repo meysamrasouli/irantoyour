@@ -37,6 +37,12 @@ export function convertToPersianDigits(value: string | number): string {
     return String(value).replace(/[0-9]/g, (digit) => persianDigits[Number(digit)])
 }
 
+export function convertDecimalToInt(value: number, digits: number): number {
+    return Math.trunc(value * 10 ** digits);
+}
+export function convertIntToDecimal(value: number, digits: number): number {
+    return Number((value / 10 ** digits).toFixed(digits));
+}
 
 /**
  * @function convertToPersianDate

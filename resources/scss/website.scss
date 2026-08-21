@@ -10,14 +10,22 @@
 .accent-text{
     color: $color-primary;
 }
-
-.section-title{
-    text-align: center;
+.section-block{
+    padding-top: 100px;
+    padding-bottom: 100px;
 }
-.section-title-description{
-    max-width: 60%;
-    margin: 0 auto;
-    text-align: center;
+.section-detail{
+    margin-bottom: 50px;
+
+    h2{
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    .section-description{
+        max-width: 60%;
+        margin: 0 auto;
+        text-align: center;
+    }
 }
 //==================================================| Layout |==================================================\\
 body #app{
@@ -71,30 +79,42 @@ body #app{
                 display: grid;
                 grid-template-columns: 2fr 1fr 1fr 1fr;
                 gap: 50px;
+                color: $color-text-03;
 
                 .about{
-                    img{ width: 80px; }
+                    img{
+                        width: 80px;
+                        margin-bottom: 20px;
+                    }
                 }
-                .quick-link, .social-media, .badge{
+                .quick-link, .contact, .badge{
                     span{
                         margin-bottom: 10px;
                         display: block;
-                        font-size: 16px;
-                        font-weight: bold;
+                        font-size: $font-lg;
+                        color: $color-primary;
                     }
                     ul{
                         display: flex;
-                        gap: 20px;
-
-                        i{
-                            font-size: 24px;
-                        }
-                    }
-                }
-                .quick-link{
-                    ul{
                         flex-direction: column;
                         gap: 10px;
+
+                        i{
+                            margin-left: 10px;
+                            font-size: $font-xl;
+                            color: $color-primary;
+                        }
+                    }
+                    ul.social-media{
+                        margin-top: 20px;
+                        flex-direction: row;
+
+                        i{
+                            font-size: $font-2xl;
+                        }
+                    }
+                    ul.badge{
+                        flex-direction: row;
                     }
                 }
             }
@@ -107,19 +127,150 @@ body #app{
     }
 }
 //==================================================| Pages |==================================================\\
+//==================================================| Index
 main.index{
     section.hero{
+        background-color: #131f2f;
 
+        .middle{
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+
+            img{
+                height: 100%;
+                position: absolute;
+                z-index: 0;
+            }
+            div{
+                max-width: 420px;
+                margin-right: 100px;
+                color: #fff;
+                position: relative;
+
+                h1{
+                    margin-bottom: 20px;
+                    font-size: $font-5xl;
+                    color: $color-primary;
+                }
+                p:first-of-type{
+                    margin-bottom: 10px;
+                    font-size: $font-2xl;
+                }
+            }
+        }
     }
     section.benefit{
         ul.benefit-list{
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 50px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
 
             li{
-                
+                padding: 30px 40px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                border-radius: $radius-md;
+                box-shadow: $box-shadow-01;
+
+                i{
+                    padding: 20px;
+                    border-radius: $radius-md;
+                    font-size: $font-2xl;
+                }
+                div{
+                    font-weight: bold;
+                }
+                p{
+                    font-size: $font-sm;
+                    color: $color-text-02;
+                    text-align: center;
+                }
+            }
+        }
+    }
+    section.chain-supply{
+        background-color: $color-gray-bg;
+
+        .middle{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+
+            .section-detail{
+                h2, p {
+                    text-align: right;
+                }
+            }
+            img{
+                border-radius: $radius-md;
+                box-shadow: $box-shadow-01;
+                position: relative;
+            }
+            ul{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                li{
+                    padding: 20px;
+                    display: grid;
+                    grid-template:
+                        "i h" auto
+                        "i p" auto / auto 1fr;
+                    gap: 0 20px;
+                    border: solid 1px $color-border-light;
+                    border-radius: $radius-md;
+
+                    i{
+                        grid-area: i;
+                        width: 60px;
+                        height: 60px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: $radius-md;
+                        font-size: $font-2xl;
+                    }
+                    h3{
+                        grid-area: h;
+                    }
+                    p{
+                        grid-area: p;
+                        color: $color-text-02;
+                    }
+                }
+            }
+        }
+    }
+    section.register{
+        background-color: $color-primary-dark;
+
+        .middle{
+            color: $color-white;
+            text-align: center;
+
+            h2{
+                font-size: $font-3xl;
+                margin-bottom: 10px;
+            }
+            button{
+                height: max-content;
+                margin-top: 30px;
+                padding: 10px 30px;
+                font-size: $font-lg;
+                border-radius: $radius-lg;
             }
         }
     }
 }
+//==================================================| About
+//==================================================| Contact
+//==================================================| Term
+//==================================================| Register

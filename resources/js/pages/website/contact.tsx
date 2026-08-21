@@ -6,9 +6,13 @@ export default function Contact() {
         <>
             <Head title="تماس با ما" />
             <Layout>
-                <div>
-                    <h1>تماس با ما</h1>
-                </div>
+                <main className="contact">
+                    <section className="contact">
+                        <div className="middle">
+                            <h1>تماس با ما</h1>
+                        </div>
+                    </section>
+                </main>
             </Layout>
         </>
     )

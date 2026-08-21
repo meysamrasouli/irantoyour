@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\Auth;
 use \App\Http\Controllers\Website;
@@ -13,3 +14,6 @@ Route::get('/', [Website\WebsiteController::class, 'index']);
 Route::get('about', [Website\WebsiteController::class, 'about']);
 Route::get('terms', [Website\WebsiteController::class, 'terms']);
 Route::get('contact', [Website\WebsiteController::class, 'contact']);
+
+Route::get('register', [Website\RegisterController::class, 'index'])->name('register');
+Route::get('register/store', [Website\RegisterController::class, 'store'])->name('register.store');

@@ -62,9 +62,14 @@ export default function Layout({ children }: Props) {
                             </ul>
                         </div>
 
-                        <div className="social-media">
-                            <span>ما را دنبال کنید</span>
+                        <div className="contact">
+                            <span>اطلاعات تماس</span>
                             <ul>
+                                <li><i className="fa-light fa-location-dot"></i><a>تهران، شهران</a></li>
+                                <li><i className="fa-light fa-phone-volume"></i><a>09127979335</a></li>
+                                <li><i className="fa-light fa-envelope"></i><a>info@irantoyour.com</a></li>
+                            </ul>
+                            <ul className="social-media">
                                 <li><a href="/" rel="nofollow" target="_blank"><i className="fa-brands fa-instagram"></i></a></li>
                                 <li><a href="/" rel="nofollow" target="_blank"><i className="fa-brands fa-telegram"></i></a></li>
                                 <li><a href="/" rel="nofollow" target="_blank"><i className="fa-brands fa-whatsapp"></i></a></li>
@@ -73,7 +78,7 @@ export default function Layout({ children }: Props) {
 
                         <div className="badge">
                             <span>نشان ها</span>
-                            <ul>
+                            <ul className="badge">
                                 <li><a href="/" rel="nofollow" target="_blank"><i className="fa-brands fa-instagram"></i></a></li>
                                 <li><a href="/" rel="nofollow" target="_blank"><i className="fa-brands fa-instagram"></i></a></li>
                             </ul>

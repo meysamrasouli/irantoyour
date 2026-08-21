@@ -1,5 +1,6 @@
 //==================================================| Variables |==================================================\\
 //==============================| Color
+// Primary
 $color-primary-lightest: #FFDDB8;
 $color-primary-light: #FFB95F;
 $color-primary: #F59E0B;
@@ -7,20 +8,24 @@ $color-primary-dark: #EE9800;
 $color-primary-darkest: #A76A00;
 $color-primary-bg: #FFEEDE;
 
+// Secondary
 $color-secondary-lightest: #3C475A;
 $color-secondary-light: #263143;
 $color-secondary: #1E293B;
 $color-secondary-dark: #111C2D;
 $color-secondary-darkest: #000000;
+$color-secondary-bg: #ECF1FF;
 
-// General Color
+// Greed
 $color-green-bg: #d1fadf;
 $color-green-lightest: #6ce9a6;
 $color-green-light: #32d583;
 $color-green: #12b76a;
 $color-green-dark: #039855;
 $color-green-darkest: #027a48;
+$color-green-bg: #e7f8f2;
 
+// Red
 $color-red-bg: #fee4e2;
 $color-red-lightest: #fda29b;
 $color-red-light: #f97066;
@@ -28,24 +33,32 @@ $color-red: #f04438;
 $color-red-dark: #d92d20;
 $color-red-darkest: #b42318;
 
+// Orange
 $color-orange-lightest: #fdb022;
 $color-orange-light: #fdb022;
 $color-orange: #f79009;
 $color-orange-dark: #dc6803;
 $color-orange-darkest: #b54708;
+$color-orange-bg: #fef5e6;
 
+// Blue
 $color-blue-lightest: blue;
 $color-blue-light: blue;
 $color-blue: blue;
 $color-blue-dark: blue;
 $color-blue-darkest: blue;
 
+// Gray
+$color-gray-bg: #f8fafc;
+
+// Black and White
 $color-white: #ffffff;
 $color-black: #000000;
 
 // Color Text
 $color-text-01: #1a1a1a;
 $color-text-02: #6b7280;
+$color-text-03: #bcbfc5;
 
 // Color border
 $color-border-lightest: #f0f0f0;
@@ -55,10 +68,10 @@ $color-border-dark: #a1a3a8;
 $color-border-darkest: #81858b;
 
 // Background level
-$color-bg-0: #fff;
-$color-bg-1: #fff;
-$color-bg-2: #fff;
-$color-bg-3: #fff;
+$color-bg-0: $color-white;
+$color-bg-1: $color-white;
+$color-bg-2: $color-white;
+$color-bg-3: $color-white;
 
 //==============================| Table
 $table-header: $color-primary-light;
@@ -81,6 +94,13 @@ $font-lg:  16px;
 $font-xl:  18px;
 $font-2xl: 22px;
 $font-3xl: 28px;
+$font-4xl: 32px;
+$font-5xl: 48px;
+
+//==============================| Shadow
+$box-shadow-01: 0 0 10px rgba(#000, 0.1);
+
+$box-shadow-primary-01: 0 0 10px 5px rgba($color-primary, 0.2);
 
 //==================================================| Fonts |==================================================\\
 @font-face{
@@ -169,7 +189,7 @@ img {
         content: 'تومان';
         padding: 3px;
         font-weight: normal!important;
-        font-size: 14px;
+        font-size: $font-md;
     }
 }
 //==============================| overlay
@@ -262,6 +282,27 @@ img {
         }
     }
 }
+//==============================| label{
+.label-primary{
+    color: $color-primary;
+    background-color: $color-primary-bg;
+}
+.label-secondary{
+    color: $color-secondary;
+    background-color: $color-secondary-bg;
+}
+.label-green{
+    color: $color-green;
+    background-color: $color-green-bg;
+}
+.label-red{
+    color: $color-red;
+    background-color: $color-red-bg;
+}
+.label-orange{
+    color: $color-orange;
+    background-color: $color-orange-bg;
+}
 //==============================| Form
 form{
     &:has(>.form-container){
@@ -314,15 +355,38 @@ a[class*="custom-button"]{
 
 //------------------------------| normal
 .custom-button, .custom-icon{
-    color: #fff;
+    color: $color-text-01;
+    background-color: transparent;
+    border: solid 1px $color-border-light;
+
+    &:hover{
+        color: $color-white;
+        background-color: $color-primary;
+    }
+    &:active{
+        color: $color-white;
+        background-color: $color-primary-dark;
+    }
+}
+//------------------------------| primary
+.custom-button-primary, .custom-icon-primary{
+    color: $color-white;
     background-color: $color-primary;
 
     &:hover{   background-color: $color-primary-dark;   }
-    &:active{   background-color: $color-primary-dark;   }
+    &:active{   background-color: $color-primary-darkest;   }
+}
+//------------------------------| secondary
+.custom-button-secondary, .custom-icon-secondary{
+    color: $color-white;
+    background-color: $color-secondary;
+
+    &:hover{   background-color: $color-secondary-dark;   }
+    &:active{   background-color: $color-secondary-darkest;   }
 }
 //------------------------------| green
 .custom-button-green, .custom-icon-green{
-    color: #fff;
+    color: $color-white;
     background-color: $color-green;
 
     &:hover{   background-color: $color-green-dark;   }
@@ -330,14 +394,14 @@ a[class*="custom-button"]{
 }
 //------------------------------| red
 .custom-button-red, .custom-icon-red{
-    color: #fff;
+    color: $color-white;
     background-color: $color-red;
 
     &:hover{   background-color: $color-red-dark;   }
     &:active{   background-color: $color-red-dark;   }
 }
 //------------------------------| transparent text
-[class*="custom-button-trans-text"], [class*="custom-icon-trans-text"]{
+.custom-button-trans-text, .custom-icon-trans-text{
     background-color: transparent;
     border: solid 1px transparent;
 
@@ -346,12 +410,12 @@ a[class*="custom-button"]{
         border-color: $color-primary;
     }
     &:active{
-        color: #fff;
+        color: $color-white;
         background-color: $color-primary;
     }
 }
 //------------------------------| transparent text
-[class*="custom-button-trans-primary-text"], [class*="custom-icon-trans-primary-text"]{
+.custom-button-trans-primary-text, .custom-icon-trans-primary-text{
     color: $color-primary;
     background-color: transparent;
     border: solid 1px transparent;
@@ -360,7 +424,7 @@ a[class*="custom-button"]{
         border-color: $color-primary;
     }
     &:active{
-        color: #fff;
+        color: $color-white;
         background-color: $color-primary;
     }
 }
@@ -370,12 +434,26 @@ a[class*="custom-button"]{
     border: solid 1px $color-primary;
 
     &:hover{
-        color: #fff;
+        color: $color-white;
         background-color: $color-primary;
     }
     &:active{
-        color: #fff;
+        color: $color-white;
         background-color: $color-primary;
+    }
+}
+//------------------------------| transparent secondary
+.custom-button-trans-secondary, .custom-icon-trans-secondary{
+    color: $color-secondary;
+    border: solid 1px $color-secondary;
+
+    &:hover{
+        color: $color-white;
+        background-color: $color-secondary;
+    }
+    &:active{
+        color: $color-white;
+        background-color: $color-secondary;
     }
 }
 //------------------------------| transparent green
@@ -384,11 +462,11 @@ a[class*="custom-button"]{
     border: solid 1px $color-green;
 
     &:hover{
-        color: #fff;
+        color: $color-white;
         background-color: $color-green;
     }
     &:active{
-        color: #fff;
+        color: $color-white;
         background-color: $color-green;
     }
 }
@@ -398,11 +476,11 @@ a[class*="custom-button"]{
     border: solid 1px $color-red;
 
     &:hover{
-        color: #fff;
+        color: $color-white;
         background-color: $color-red;
     }
     &:active{
-        color: #fff;
+        color: $color-white;
         background-color: $color-red;
     }
 }
@@ -451,7 +529,7 @@ a[class*="custom-button"]{
             padding: 0 5px;
             line-height: 12px;
             position: absolute;
-            font-size: 12px;
+            font-size: $font-sm;
             background-color: $color-white;
             z-index: 1;
         }
@@ -525,7 +603,7 @@ a[class*="custom-button"]{
             position: absolute;
             right: 10px;
             bottom: -3px;
-            font-size: 10px;
+            font-size: $font-xs;
             color: $color-text-02;
             background-color: $color-white;
         }
@@ -592,7 +670,7 @@ a[class*="custom-button"]{
                 &.fixed{
                     width: 40px;
                     padding: 10px 5px;
-                    font-size: 10px;
+                    font-size: $font-xs;
                     text-align: center;
                 }
                 &.flexible{
@@ -631,7 +709,7 @@ a[class*="custom-button"]{
                         white-space: wrap;
                     }
                     & > a > span{
-                        font-size: 12px;
+                        font-size: $font-sm;
                     }
                 }
             }
@@ -654,7 +732,7 @@ a[class*="custom-button"]{
         &:after{// down arrow
             content: "\f078";
             font-family: "Font Awesome 6 Pro";
-            font-size: 10px;
+            font-size: $font-xs;
             font-weight: 900;
             position: absolute;
             top: 15px;
@@ -688,8 +766,8 @@ a[class*="custom-button"]{
             cursor: pointer;
             border-radius: 5px;
             background-color: $color-primary;
-            color: #fff;
-            font-size: 12px;
+            color: $color-white;
+            font-size: $font-sm;
 
             &:before{
                 content: "\f00d";
@@ -743,7 +821,7 @@ a[class*="custom-button"]{
                 span:not([title=""]):after{
                     content: "(" attr(title) ")";
                     margin-right: 5px;
-                    font-size: 12px;
+                    font-size: $font-sm;
                 }
             }
         }
@@ -851,11 +929,11 @@ a[class*="custom-button"]{
             justify-content: center;
             align-items: center;
 
-            i{ font-size: 20px; }
+            i{ font-size: $font-xl; }
         }
         .notification-text{
             padding: 20px 15px;
-            font-size: 12px;
+            font-size: $font-sm;
         }
     }
 }
@@ -893,5 +971,132 @@ a[class*="custom-button"]{
     to {
         opacity: 0;
         transform: translate3d(-2000px, 0, 0);
+    }
+}
+//==============================| membership plan
+.arc-membership-plan{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+
+    li{
+        padding-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border: solid 1px $color-border-light;
+        border-radius: $radius-lg;
+        overflow: hidden;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover{
+            border-color: $color-primary-lightest;
+            box-shadow: $box-shadow-primary-01;
+
+            .plan-title, button{
+                background-color: $color-primary-lightest;
+                color: $color-white;
+                border-color: $color-primary-lightest;
+            }
+        }
+        &.active{
+            border-color: $color-primary;
+            box-shadow: $box-shadow-primary-01;
+
+            .plan-title, button{
+                background-color: $color-primary-dark;
+                color: $color-white;
+                border-color: $color-primary;
+            }
+        }
+        .plan-title, button{
+            transition: all 0.3s;
+        }
+        .plan-title{
+            padding: 20px 10px;
+            border-bottom: solid 1px $color-border-light;
+            font-weight: bold;
+            background-color: $color-gray-bg;
+        }
+        .plan-price{
+            font-size: $font-2xl;
+            font-weight: bold;
+        }
+        .plan-description{
+            padding: 0 10px;
+            color: $color-text-02;
+            font-size: $font-sm;
+        }
+        button{
+            margin: 0 10px;
+        }
+    }
+}
+//==============================| progress step
+.arc-progress-step{
+    width: 100%;
+    height: 90px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    align-items: end;
+    counter-reset: progress-step;
+
+    li{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        font-size: 12px;
+
+        &:before{
+            counter-increment: progress-step;
+            content: counter(progress-step);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 30px;
+            z-index: 1;
+            background-color: $color-gray-bg;
+            border: solid 3px $color-border-light;
+            border-radius: 50%;
+            font-size: $font-lg;
+        }
+        &:not(:last-child):after{
+            content: '';
+            width: 100%;
+            height: 5px;
+            position: absolute;
+            bottom: 55px;
+            right: 50%;
+            background-color: $color-border-light;
+        }
+        &.progress-pass{
+            color: $color-primary;
+
+            &:before{
+                content: "\f00c";
+                font-family: "Font Awesome 6 Pro";
+                font-weight: bold;
+                color: $color-white;
+                background-color: $color-primary;
+                border: solid 3px $color-primary;
+            }
+            &:after{
+                background-color: $color-primary;
+            }
+        }
+        &.progress-active{
+            color: $color-primary;
+
+            &:before{
+                color: $color-primary;
+                border: solid 3px $color-primary;
+            }
+        }
     }
 }
