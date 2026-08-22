@@ -1,15 +1,17 @@
 import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
+import {useState} from "react";
+import * as React from "react";
 import ArcMembershipPlan, {PlanInterface} from "@/components/ui/arc_membershipPlan";
-import {useEffect, useState} from "react";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
 import {useFormHandler} from "@/shared/hooks/useFormSubmit";
 import UserDetail from "@/components/website/register/userDetail";
-import * as React from "react";
+import { PageDetailInterface } from "@/shared/types/pageDetailInterface";
+
 
 interface ControllerPropsInterface {
     list_plan: PlanInterface[],
-    pageDetail: object,
+    pageDetail: PageDetailInterface,
 }
 export interface FormDataInterface {
     membershipPlan: number;
@@ -17,6 +19,32 @@ export interface FormDataInterface {
     national_code: string;
     first_name: string;
     last_name: string;
+}
+
+type RegisterFormHandler = ReturnType<typeof useFormHandler<FormDataInterface>>;
+
+export function validateRegisterField(
+    field: keyof FormDataInterface,
+    value: unknown,
+    validateField: RegisterFormHandler['validateField']
+): string {
+    switch (field) {
+        case 'mobile':
+            return validateField('mobile', ['notEmpty', 'mobile'], { value });
+        case 'national_code':
+            return validateField('national_code', ['notEmpty', 'national_code'], { value });
+        case 'first_name':
+            return validateField('first_name', ['notEmpty', 'string_fa'], { value });
+        case 'last_name':
+            return validateField('last_name', ['notEmpty', 'string_fa'], { value });
+        case 'membershipPlan':
+            return validateField('membershipPlan', ['notEmpty', 'integer', { integer_min: 1 }], {
+                value,
+                customError: value ? undefined : 'لطفاً یک پلن انتخاب کنید',
+            });
+        default:
+            return '';
+    }
 }
 
 export default function Register(controllerProps: ControllerPropsInterface) {
@@ -29,21 +57,39 @@ export default function Register(controllerProps: ControllerPropsInterface) {
         first_name: '',
         last_name: '',
     });
-    // const onSubmit = (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     formSubmit({ method: 'put', action: `/categories/${category.id}` }, (index) => {
-    //         const rules = validationRules[index as keyof CategoryFormData];
-    //         return rules ? validateField(index, rules) : null;
-    //     });
-    // };
 
     //==============================| Event
+    const validateStep = (stepIndex: number): boolean => {
+        const fieldsInEveryStep: Record<number, (keyof FormDataInterface)[]> = {
+            0: ['membershipPlan'],
+            1: ['mobile', 'national_code', 'first_name', 'last_name'],
+        };
+        const fields = fieldsInEveryStep[stepIndex];
+        if (!fields) return true;
+
+        let isValid = true;
+        fields.forEach((field) => {
+            const error = validateRegisterField(field, form.data[field], validateField);
+            if (error) isValid = false;
+        });
+        return isValid;
+    };
+
     const onclick_nextStep = () => {
+        if (!validateStep(progressStepIndex)) return;
+
         setProgressStepIndex((progressStepIndex < progressStepList.length-1) ? progressStepIndex+1 : progressStepList.length-1)
     }
     const onclick_previousStep = () => {
         setProgressStepIndex((progressStepIndex > 0) ? progressStepIndex-1 : 0)
     }
+    const onClickSubmit = () => {
+        // مرحله‌ی نهایی هم دوباره همه‌ی فیلدها رو چک می‌کنه (نه فقط مرحله فعلی) - محافظت نهایی قبل از ارسال به سرور
+        formSubmit({ method: 'post', action: '/register' }, (index) => {
+            const field = index as keyof FormDataInterface;
+            return validateRegisterField(field, form.data[field], validateField);
+        });
+    };
 
     const selectedPlan = controllerProps.list_plan.find(
         (item) => item.id === form.data.membershipPlan
@@ -57,8 +103,8 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                     <section className="user-register">
                         <div className="middle">
                             <div className="page-detail">
-                                <h1>ثبت نام</h1>
-                                <p className="page-description">به خانواده بزرگ ایران طیور بپیوندید</p>
+                                <h1><span className="accent-text">عضویت</span> در بازار تخصصی طیور</h1>
+                                <p className="page-description">به خانواده بزرگ ایران طیور بپیوندید. ابتدا مدت اشتراک خود را انتخاب کنید، سپس اطلاعات شخصی را تکمیل و آگهی‌های خود را منتشر کنید.</p>
                             </div>
 
                             <div className="step-form">
@@ -67,10 +113,6 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                 <ul className="step-container">
                                     {progressStepIndex === 0 && (
                                         <li>
-                                            <div className="section-detail">
-                                                <h2>انتخاب <span className="accent-text">طرح اشتراک</span></h2>
-                                                <p className="section-description">برای دسترسی به امکانات سامانه، یکی از  طرح های اشتراک زیر را انتخاب کنید.</p>
-                                            </div>
                                             <ArcMembershipPlan
                                                 value={form.data.membershipPlan}
                                                 setValue={(value) => form.setData('membershipPlan', value)}
@@ -80,10 +122,6 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                     )}
                                     {progressStepIndex === 1 && (
                                         <li>
-                                            <div className="section-detail">
-                                                <h2>ثبت <span className="accent-text">اطلاعات کاربری</span></h2>
-                                                <p className="section-description">اطلاعات کاربری را برای استفاده از در سامانه به دقت وارد کنید.</p>
-                                            </div>
                                             <UserDetail form={form} formError={formError} validateField={validateField} />
                                         </li>
                                     )}
@@ -108,16 +146,21 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                     {selectedPlan ? `اشتراک ${selectedPlan.detail.duration} ` : 'پلنی انتخاب نشده است'}</td>
                                                 </tr>
                                                 </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td colSpan={3}>{formError['general']}</td>
+                                                </tr>
+                                                </tfoot>
                                             </table>
                                         </li>
                                     )}
                                 </ul>
 
-                                <div className="button-container">
+                                <div className="button-container-center">
                                     {progressStepIndex < progressStepList.length - 1 ? (
                                         <button type="button" className="custom-button-primary" onClick={()=>onclick_nextStep()}>بعدی</button>
                                     ) : (
-                                        <button type="button" className="custom-button-primary" onClick={() => formSubmit}>ثبت نهایی و پرداخت</button>
+                                        <button type="button" className="custom-button-primary" onClick={onClickSubmit}>ثبت نهایی و پرداخت</button>
                                     )}
                                     {progressStepIndex > 0 && (
                                         <button type="button" className="custom-button-trans-text" onClick={onclick_previousStep}>قبلی</button>

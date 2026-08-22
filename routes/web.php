@@ -16,4 +16,4 @@ Route::get('terms', [Website\WebsiteController::class, 'terms']);
 Route::get('contact', [Website\WebsiteController::class, 'contact']);
 
 Route::get('register', [Website\RegisterController::class, 'index'])->name('register');
-Route::get('register/store', [Website\RegisterController::class, 'store'])->name('register.store');
+Route::post('register', [Website\RegisterController::class, 'store'])->name('register.store');

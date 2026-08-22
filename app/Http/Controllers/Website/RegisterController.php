@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Http\Controllers\Bank\RegisterController as Bank;
+use App\Http\Requests\Website\RegisterStoreRequest;
+use App\Models\Register;
 use App\Models\Tariff;
 use inertia\Inertia;
 use Inertia\Response;
@@ -26,6 +29,15 @@ class RegisterController extends Controller
     public function store(RegisterStoreRequest $request){
         $inputData = $request->validated();
 
-        //return (new RegisterBankController())->redirectToBank($invoice);
+        $register = Register::query()->updateOrCreate([
+            'mobile' => $inputData['mobile'],
+            'national_code' => $inputData['national_code'],
+        ],[
+            'tariff_id' => $inputData['membershipPlan'],
+            'first_name' => $inputData['first_name'],
+            'last_name' => $inputData['last_name'],
+        ]);
+
+        return (new Bank())->redirectToBank($register);
     }
 }

@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tariffs', function (Blueprint $table) {
+        Schema::create('registers', function (Blueprint $table) {
             $table->id();
-            $table->string('type', length: 50);
-            $table->string('variety', length: 50)->nullable();
-            $table->integer('price');
-            $table->json('detail');
-            $table->boolean('status')->default(true);
+            $table->integer('user_id')->nullable();
+            $table->integer('tariff_id');
+            $table->string('	mobile', length: 11);
+            $table->string('first_name', length: 50);
+            $table->string('last_name', length: 50);
+            $table->string('national_code', length: 10);
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tariffs');
+        Schema::dropIfExists('registers');
     }
 };

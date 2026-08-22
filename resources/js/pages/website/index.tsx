@@ -1,5 +1,10 @@
 import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
+import { PageDetailInterface } from "@/shared/types/pageDetailInterface";
+
+interface ControllerPropsInterface {
+    pageDetail: PageDetailInterface;
+}
 
 export default function Home() {
     return (

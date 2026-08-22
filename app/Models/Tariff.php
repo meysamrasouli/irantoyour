@@ -19,7 +19,6 @@ class Tariff extends Model{
     protected $fillable = [
         'type',
         'variety',
-        'duration',
         'price',
         'detail',
     ];

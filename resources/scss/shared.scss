@@ -983,7 +983,7 @@ a[class*="custom-button"]{
         padding-bottom: 20px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 30px;
         border: solid 1px $color-border-light;
         border-radius: $radius-lg;
         overflow: hidden;
@@ -1018,8 +1018,13 @@ a[class*="custom-button"]{
             background-color: $color-gray-bg;
         }
         .plan-price{
-            font-size: $font-2xl;
-            font-weight: bold;
+            .price-toman{
+                font-size: $font-2xl;
+                font-weight: bold;
+            }
+            .plan-duration{
+                font-size: $font-sm;
+            }
         }
         .plan-description{
             padding: 0 10px;

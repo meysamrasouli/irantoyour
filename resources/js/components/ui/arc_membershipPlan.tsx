@@ -5,6 +5,7 @@ export interface PlanInterface {
     price: number;
     detail: {
         duration: number;
+        duration_fa: string;
         description: string;
         bonusBalance: number
     };
@@ -24,8 +25,11 @@ export default function ArcMembershipPlan({ value, setValue, plans }: ArcMembers
                     className={item.id === value ? 'active' : ''}
                     onClick={() => setValue(item.id)}
                 >
-                    <div className="plan-title">{`اشتراک ${item.detail.duration}`}</div>
-                    <div className="plan-price price-toman">{FormatNumber(item.price)}</div>
+                    <div className="plan-title">{`اشتراک ${item.detail.duration_fa}`}</div>
+                    <div className="plan-price">
+                        <div className="price-toman">{FormatNumber(item.price)}</div>
+                        <div className="plan-duration">{`${item.detail.duration} روز دسترسی کامل`}</div>
+                    </div>
                     <ul className="plan-description">
                         <li>{item.detail.description}</li>
                         <li>شارژ <span className="price-toman">{FormatNumber(item.detail.bonusBalance)}</span> اعتبار</li>

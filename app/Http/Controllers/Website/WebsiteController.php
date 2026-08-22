@@ -50,7 +50,7 @@ class WebsiteController extends Controller
     {
         return inertia::render('website/contact', [
             'pageDetail' => [
-                'url' => env('APP_URL').'contact',// canonical
+                'url' => env('APP_URL').'/contact',// canonical
                 'description' => "",
                 'breadcrumb' => [
                     ['name' => env('APP_NAME_FA'), 'url' => env('APP_URL')]

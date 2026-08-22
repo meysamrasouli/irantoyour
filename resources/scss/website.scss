@@ -290,11 +290,36 @@ main.index{
 main.register{
     section.user-register{
         .step-form{
-            padding: 20px 200px;
+            padding: 0 200px;
             display: flex;
             flex-direction: column;
             gap: 50px;
-            //background-color: rgba(red, 0.1);
+
+            //.arc-membership-plan{}
+            .user-detail{
+                width: 400px;
+                margin: 0 auto;
+                padding: 20px;
+                border: solid 1px $color-border;
+                border-radius: $radius-lg;
+
+                .user-detail-title{
+                    padding-bottom: 10px;
+                    border-bottom: solid 1px $color-border;
+
+                    h2{
+                        font-size: $font-lg;
+                    }
+                    p{
+                        color: $color-text-02;
+                        font-size: $font-sm;
+                    }
+                }
+                ul.form-container{
+                    margin-top: 20px;
+                    grid-template-columns: 1fr;
+                }
+            }
         }
     }
 }
