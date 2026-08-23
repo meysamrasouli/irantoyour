@@ -18,15 +18,8 @@ class Invoice extends Model
     protected $fillable = [
         'user_id',
         'total',
-        'respond_bank',
         'status',
     ];
-
-    protected function casts(): array{
-        return [
-            'respond_bank' => 'array',
-        ];
-    }
 
     //==================================================| Relations |==================================================\\
     public function user(): BelongsTo{
@@ -34,7 +27,7 @@ class Invoice extends Model
     }
 
     public function invoiceItems(): HasMany{
-        return $this->hasMany(InvoiceOrder::class);
+        return $this->hasMany(InvoiceItem::class);
     }
 
     public function transactions(): MorphMany{
@@ -43,14 +36,4 @@ class Invoice extends Model
 
     //==================================================| Functions |==================================================\\
     //========================================| create invoice
-    static function invoiceCreate(int $userId, array $invoiceItems): void{
-        $total = array_sum(array_column($invoiceItems, 'price'));
-
-        $invoice = Invoice::create([
-            'user_id' => $userId,
-            'total' => $total * (1.1), // tax
-        ]);
-
-        $invoice->invoiceOrder()->createMany($invoiceItems);
-    }
 }

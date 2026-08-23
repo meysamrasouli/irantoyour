@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Bank;
 
 use App\Models\Invoice;
 use App\Models\Register;
+use App\Models\Transaction;
 use App\Models\User;
+use App\Payment\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use inertia\Inertia;
 use Inertia\Response;
 
@@ -18,17 +21,23 @@ class RegisterController extends Controller
     public function redirectToBank(Register $register){
         $price = $register->tariff->price;
 
-//        try {
-//            $payment = new Payment('Mellat');
-//            return $payment->pay(
-//                Register::class,
-//                $register->id,
-//                $price * 10,// تومان
-//                env('APP_URL').'/bank-callback/register/'.$register->id
-//            );
-//        } catch (MellatException|\Exception $e){
-//            return back()->withErrors($e->getMessage());
-//        }
+        if($price > 0){
+            // redirect to back
+            // todo: add TAX to price
+//            try {
+//                return (new Payment('Mellat'))->pay(
+//                    Register::class,
+//                    $register->id,
+//                    $price * 10,// تبدیل به ریال
+//                    env('APP_URL').'/bank-callback/register/'.$register->id
+//                );
+//            } catch (MellatException|\Exception $e){
+//                return back()->withErrors($e->getMessage());
+//            }
+        }else {
+            $this->_finalize($register);
+            return Inertia::location('/login');// redirect with a full reload
+        }
     }
 
     /**
@@ -38,50 +47,74 @@ class RegisterController extends Controller
      * @return Response
      */
     public function bankCallback(Request $request, int $registerId): Response{
-        try {
-            $error = "";
-            $register = Register::findOrFail($registerId);
-            $tariff = $register->tariff;
+        $error = "";
+        $register = Register::findOrFail($registerId);
 
-            // if user refresh the page
-            $user = User::where([
-                'mobile' => $register['mobile'],
-                'national_id_number' => $register['national_id_number'],
-            ])->first();
+        // if user refresh the page
+        if(is_null($register->user_id)){
+            try {
+                $lastTransaction = $register->latestTransaction;
 
-            if(!$user){
-                // create a new user
-                $user = User::createNewUser([
-                    'mobile' => $register['mobile'],
-                    'first_name' => $register['first_name'],
-                    'last_name' => $register['last_name'],
-                    'national_id_number' => $register['national_id_number'],
-                ], $tariff->variety, 'register');
+                $payment = new Payment($lastTransaction->gateway);
+                $bankDetail = $payment->verify($request);
 
-                // create a new invoice
-                Invoice::craete([
-                    'user_id' => $user->id,
-                    'total' => $tariff->price,
-                    'respond_bank' => $request,
-                    'status' => 'paid',
-                ])->invoiceItem()->create([
-                    'type' => 'membership',
-                    'variety' => $tariff->variety,
-                    'price' => $tariff->price,
-                ]);
+                $this->_finalize($register);
 
-                // update register
-                $register->update([
-                    'user_id' => $user->id,
-                ]);
+            } catch (MellatException|\Exception|\Throwable $e){
+                $error = $e->getMessage();
             }
-        } catch (MellatException|\Exception $e){
-            $error = $e->getMessage();
         }
 
         return inertia::render('Bank/callback',[
             'error' => $error,
             'redirectUrl' => (empty($error)) ? '/login' : '/register'
         ]);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    private function _finalize(Register $register): void{
+        $tariff = $register->tariff;
+
+        // atomic
+        DB::transaction(function () use ($register, $tariff) {
+            //------------------------------| create a new user
+            $user = User::createNewUser([
+                'mobile' => $register['mobile'],
+                'first_name' => $register['first_name'],
+                'last_name' => $register['last_name'],
+                'national_id_number' => $register['national_id_number'],
+            ], $tariff->variety, 'register');
+
+            // todo: add bonus credit to user wallet
+
+            //------------------------------| create a new invoice
+            $invoice = Invoice::create([
+                'user_id' => $user->id,
+                'total' => $tariff->price,
+                'status' => 'paid',
+            ]);
+
+            $invoice->invoiceItem()->create([
+                'type' => 'membership',
+                'variety' => $tariff->variety,
+                'price' => $tariff->price,
+            ]);
+
+            //------------------------------| move register transactions to invoice transaction
+            Transaction::where([
+                'transactionable_type' => Register::class,
+                'transactionable_id' => $register->id,
+            ])->update([
+                'transactionable_type' => Invoice::class,
+                'transactionable_id'   => $invoice->id,
+            ]);
+
+            //------------------------------| update register
+            $register->update([
+                'user_id' => $user->id,
+            ]);
+        });
     }
 }

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('registers', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->nullable();
-            $table->integer('tariff_id');
-            $table->string('	mobile', length: 11);
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('tariff_id')->constrained('tariffs')->restrictOnDelete();
+            $table->string('mobile', length: 11);
             $table->string('first_name', length: 50);
             $table->string('last_name', length: 50);
             $table->string('national_code', length: 10);

@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('transactionable_type', 255);
-            $table->integer('transactionable_id');
+            $table->morphs('transactionable');
             $table->string('gateway', 255);
             $table->integer('amount');
             $table->string('ref_id', 255)->nullable();

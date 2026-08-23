@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Register extends Model {
     protected $fillable = [
@@ -22,6 +23,10 @@ class Register extends Model {
 
     public function tariff(): BelongsTo{
         return $this->BelongsTo(Tariff::class);
+    }
+
+    public function latestTransaction(): morphOne{
+        return $this->morphOne(Transaction::class, 'transactionable')->latest();
     }
 }
 

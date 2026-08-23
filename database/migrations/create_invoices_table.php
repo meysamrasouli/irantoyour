@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
             $table->integer('total')->default(0);
-            $table->json('respond_bank')->nullable();
             $table->string('status', 50)->nullable();
             $table->timestamps();
         });
 
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
-            $table->integer('invoice_id');
+            $table->foreignId('invoice_id')->constrained('invoices')->cascadeOnDelete();
             $table->string('type', 50);
             $table->string('variety', 50)->nullable();
             $table->integer('price');
