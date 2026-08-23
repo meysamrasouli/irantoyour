@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
-use inertia\Inertia;
+use Inertia\Inertia;
 use Inertia\Response;
 
 class WebsiteController extends Controller

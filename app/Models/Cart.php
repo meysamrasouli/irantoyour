@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
 class Cart extends Model{
@@ -30,8 +28,8 @@ class Cart extends Model{
 
     //==================================================| Relations |==================================================\\
 
-    public function user(): HasOne{
-        return $this->hasOne(User::class);
+    public function user(): BelongsTo{
+        return $this->belongsTo(User::class);
     }
 
     //==================================================| Functions |==================================================\\
@@ -62,14 +60,16 @@ class Cart extends Model{
                 case 'membership':
                     $tariff = Tariff::where([
                         'type' => $item['type'],
-                        'variety' => $item['variety']
+                        'variety' => $item['variety'],
+                        'status' => true,
                     ])->first();
 
-                    $items[] = [
-                        'type' => $item['type'],
-                        'variety' => $item['variety'],
-                        'price' => $tariff['price']
-                    ];
+                    if(!is_null($tariff))
+                        $items[] = [
+                            'type' => $item['type'],
+                            'variety' => $item['variety'],
+                            'price' => $tariff['price']
+                        ];
                     break;
                 //------------------------------| wallet
                 case 'wallet':
@@ -82,14 +82,16 @@ class Cart extends Model{
                     }else{
                         $tariff = Tariff::where([
                             'type' => $item['type'],
-                            'variety' => $item['variety']
+                            'variety' => $item['variety'],
+                            'status' => true,
                         ])->first();
 
-                        $items[] = [
-                            'type' => $item['type'],
-                            'variety' => $item['variety'],
-                            'price' => $tariff['price']
-                        ];
+                        if(!is_null($tariff))
+                            $items[] = [
+                                'type' => $item['type'],
+                                'variety' => $item['variety'],
+                                'price' => $tariff['price']
+                            ];
                     }
                     break;
                 //------------------------------|

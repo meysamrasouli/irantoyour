@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Payment\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use inertia\Inertia;
+use Inertia\Inertia;
 use Inertia\Response;
 
 class RegisterController extends Controller
@@ -84,8 +84,8 @@ class RegisterController extends Controller
                 'mobile' => $register['mobile'],
                 'first_name' => $register['first_name'],
                 'last_name' => $register['last_name'],
-                'national_id_number' => $register['national_id_number'],
-            ], $tariff->variety, 'register');
+                'national_code' => $register['national_code'],
+            ], $tariff->detail['duration'], 'register');
 
             // todo: add bonus credit to user wallet
 
@@ -96,7 +96,7 @@ class RegisterController extends Controller
                 'status' => 'paid',
             ]);
 
-            $invoice->invoiceItem()->create([
+            $invoice->invoiceItems()->create([
                 'type' => 'membership',
                 'variety' => $tariff->variety,
                 'price' => $tariff->price,

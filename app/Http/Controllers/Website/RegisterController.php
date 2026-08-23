@@ -6,7 +6,7 @@ use App\Http\Controllers\Bank\RegisterController as Bank;
 use App\Http\Requests\Website\RegisterStoreRequest;
 use App\Models\Register;
 use App\Models\Tariff;
-use inertia\Inertia;
+use Inertia\Inertia;
 use Inertia\Response;
 
 class RegisterController extends Controller

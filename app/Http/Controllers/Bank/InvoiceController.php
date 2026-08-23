@@ -4,16 +4,15 @@ namespace App\Http\Controllers\Bank;
 
 use App\Models\Cart;
 use App\Models\Invoice;
-use App\Models\InvoiceOrder;
-use App\Models\Membership;
 use App\Models\Register;
 use App\Models\Tariff;
 use App\Models\User;
 use App\Payment\Payment;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use inertia\Inertia;
+use Inertia\Inertia;
 use Inertia\Response;
 
 class InvoiceController extends Controller
@@ -42,8 +41,6 @@ class InvoiceController extends Controller
             return back()->withErrors($e->getMessage());
         }
     }
-
-
 
     /**
      * call-back from bank
@@ -118,7 +115,7 @@ class InvoiceController extends Controller
 
     private function _moveCartToInvoice(Cart $cart): Invoice {
         $invoice = Invoice::query()
-            ->where('user_id', $cart->user_id,)
+            ->where('user_id', $cart->user_id)
             ->whereNull('status')
             ->orderByDesc('created_at')
             ->first();
