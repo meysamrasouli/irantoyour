@@ -17,23 +17,24 @@ class RegisterController extends Controller
     /**
      * redirect to bank
      * @param Register $register
+     * @throws \Throwable
      */
     public function redirectToBank(Register $register){
-        $price = $register->tariff->price;
+        $price = $register->tariff->price;// get the latest price
 
         if($price > 0){
             // redirect to back
             // todo: add TAX to price
-//            try {
-//                return (new Payment('Mellat'))->pay(
-//                    Register::class,
-//                    $register->id,
-//                    $price * 10,// تبدیل به ریال
-//                    env('APP_URL').'/bank-callback/register/'.$register->id
-//                );
-//            } catch (MellatException|\Exception $e){
-//                return back()->withErrors($e->getMessage());
-//            }
+            try {
+                return (new Payment('Mellat'))->pay(
+                    Register::class,
+                    $register->id,
+                    $price * 10,// تبدیل به ریال
+                    env('APP_URL').'/bank-callback/register/'.$register->id
+                );
+            } catch (MellatException|\Exception $e){
+                return back()->withErrors($e->getMessage());
+            }
         }else {
             $this->_finalize($register);
             return Inertia::location('/login');// redirect with a full reload

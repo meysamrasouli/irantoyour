@@ -2,19 +2,19 @@ import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
 import {useState} from "react";
 import * as React from "react";
-import ArcMembershipPlan, {PlanInterface} from "@/components/ui/arc_membershipPlan";
+import ArcTariffMembershipPlan, {PlanInterface} from "@/components/ui/arc_tariff_membershipPlan";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
 import {useFormHandler} from "@/shared/hooks/useFormSubmit";
 import UserDetail from "@/components/website/register/userDetail";
 import { PageDetailInterface } from "@/shared/types/pageDetailInterface";
-
+import { CartInterface } from "@/shared/types/cartInterface";
 
 interface ControllerPropsInterface {
     list_plan: PlanInterface[],
     pageDetail: PageDetailInterface,
 }
 export interface FormDataInterface {
-    membershipPlan: number;
+    cart: CartInterface;
     mobile: string;
     national_code: string;
     first_name: string;
@@ -37,8 +37,8 @@ export function validateRegisterField(
             return validateField('first_name', ['notEmpty', 'string_fa'], { value });
         case 'last_name':
             return validateField('last_name', ['notEmpty', 'string_fa'], { value });
-        case 'membershipPlan':
-            return validateField('membershipPlan', ['notEmpty', 'integer', { integer_min: 1 }], {
+        case 'cart':
+            return validateField('cart', ['notEmpty_object'], {
                 value,
                 customError: value ? undefined : 'لطفاً یک پلن انتخاب کنید',
             });
@@ -51,7 +51,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
     const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید نهایی']// step progress
     const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
-        membershipPlan: 0,
+        cart: {},
         mobile: '',
         national_code: '',
         first_name: '',
@@ -61,7 +61,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
     //==============================| Event
     const validateStep = (stepIndex: number): boolean => {
         const fieldsInEveryStep: Record<number, (keyof FormDataInterface)[]> = {
-            0: ['membershipPlan'],
+            0: ['cart'],
             1: ['mobile', 'national_code', 'first_name', 'last_name'],
         };
         const fields = fieldsInEveryStep[stepIndex];
@@ -91,9 +91,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
         });
     };
 
-    const selectedPlan = controllerProps.list_plan.find(
-        (item) => item.id === form.data.membershipPlan
-    );
+    const selectedPlan = controllerProps.list_plan.find((item) => item.variety === form.data.cart.variety);
 
     return (
         <>
@@ -113,9 +111,9 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                 <ul className="step-container">
                                     {progressStepIndex === 0 && (
                                         <li>
-                                            <ArcMembershipPlan
-                                                value={form.data.membershipPlan}
-                                                setValue={(value) => form.setData('membershipPlan', value)}
+                                            <ArcTariffMembershipPlan
+                                                value={form.data.cart}
+                                                setValue={(value) => form.setData('cart', value)}
                                                 plans={controllerProps.list_plan}
                                             />
                                         </li>

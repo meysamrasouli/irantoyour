@@ -1,7 +1,7 @@
 import { FormatNumber } from "@/shared/utils/convertUtils";
-
+import {CartInterface} from "@/shared/types/cartInterface";
 export interface PlanInterface {
-    id: number;
+    variety: string;
     price: number;
     detail: {
         duration: number;
@@ -11,19 +11,27 @@ export interface PlanInterface {
     };
 }
 interface ArcMembershipPlanPropsInterface {
-    value: number;
-    setValue: (value: number) => void;
+    value: CartInterface;
+    setValue: (value: CartInterface) => void;
     plans: PlanInterface[];
 }
 
-export default function ArcMembershipPlan({ value, setValue, plans }: ArcMembershipPlanPropsInterface) {
+export default function ArcTariffMembershipPlan({ value, setValue, plans }: ArcMembershipPlanPropsInterface) {
+    const onclickPlan = (index: number): void => {
+        setValue({
+            type: 'membership',
+            variety: plans[index]['variety'],
+            price: plans[index]['price'],
+        })
+    }
+
     return (
         <ul className="arc-membership-plan">
-            {plans.map((item) => (
+            {plans.map((item, index) => (
                 <li
-                    key={item.id}
-                    className={item.id === value ? 'active' : ''}
-                    onClick={() => setValue(item.id)}
+                    key={index}
+                    className={item.variety === value.variety ? 'active' : ''}
+                    onClick={onclickPlan(index)}
                 >
                     <div className="plan-title">{`اشتراک ${item.detail.duration_fa}`}</div>
                     <div className="plan-price">

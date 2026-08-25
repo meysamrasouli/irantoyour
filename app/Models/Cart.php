@@ -10,8 +10,8 @@ class Cart extends Model{
 
     /**
      * detail = [
-     *      ["type"=>"membership", "variety"=>"one-month"]
-     *      ["type"=>"wallet", "variety"=>"large"], OR ["type"=>"wallet", "variety"=>"custom", "price"=>200000]
+     *      ["type"=>"membership", "variety"=>"one-month", "price"=>"1000"],
+     *      ["type"=>"wallet", "variety"=>"large"],
      * ]
     */
     protected $fillable = [
@@ -33,72 +33,116 @@ class Cart extends Model{
     }
 
     //==================================================| Functions |==================================================\\
-    public static function addItem(array $item): void{
-        $cart = self::query()
+    private static function _findCurrentCart(): ?self{
+        return self::query()
             ->where('user_id', Auth::guard('web')->id())
             ->whereNull('lock_status')
             ->first();
+    }
+
+    /**
+     * @param array $item - ["type"=>"", "variety"=>"", "price"=>""]
+     * @return array
+    */
+    public static function addItem(array $item): array{
+        $cart = self::_findCurrentCart();
+        $detail = $cart ? $cart->detail : [];
+        $isItemExist = false;
+
+        // only custom varieties are not in tariff tables
+        $isCustom = $item['type'] === 'wallet' && $item['variety'] === 'custom';
+
+        foreach ($detail as $key => $value) {
+            if ($value['type'] === $item['type'] && $value['variety'] === $item['variety']) {
+                $isItemExist = true;
+
+                if ($isCustom) {
+                    $detail[$key]['price'] = $item['price'];// update cart item(custom) price
+                }else{
+                    return $detail;// this item is already exist
+                }
+            }
+        }
+
+        if(!$isItemExist)
+            $detail[] = $item;// this is a new item
 
         if($cart){
             $cart->update([
-                'detail' => array_merge($cart['detail'], $item)
+                'detail' => $detail
             ]);
         }else{
             Cart::create([
                 'user_id' => Auth::guard('web')->id(),
-                'detail' => $item,
+                'detail' => [$detail],
             ]);
         }
+
+        return $detail;
     }
 
-    public static function prepareCartToInvoice(Cart $cart): array{
-        $items = [];
+    public static function removeItem(int $index): array{
+        $cart = self::_findCurrentCart();
+        $detail = $cart ? $cart->detail : [];
 
-        foreach ($cart['detail'] as $item){
-            switch ($item['type']){
-                //------------------------------| membership
-                case 'membership':
-                    $tariff = Tariff::where([
-                        'type' => $item['type'],
-                        'variety' => $item['variety'],
-                        'status' => true,
-                    ])->first();
+        if(!$cart || !array_key_exists($index, $detail)) return $detail;
 
-                    if(!is_null($tariff))
-                        $items[] = [
-                            'type' => $item['type'],
-                            'variety' => $item['variety'],
-                            'price' => $tariff['price']
-                        ];
-                    break;
-                //------------------------------| wallet
-                case 'wallet':
-                    if($item['variety'] === 'custom'){
-                        $items[] = [
-                            'type' => $item['type'],
-                            'variety' => $item['variety'],
-                            'price' => $item['price']
-                        ];
-                    }else{
-                        $tariff = Tariff::where([
-                            'type' => $item['type'],
-                            'variety' => $item['variety'],
-                            'status' => true,
-                        ])->first();
+        unset($detail[$index]);
 
-                        if(!is_null($tariff))
-                            $items[] = [
-                                'type' => $item['type'],
-                                'variety' => $item['variety'],
-                                'price' => $tariff['price']
-                            ];
-                    }
-                    break;
-                //------------------------------|
+        // rearrange the item index
+        $cart->update(['detail' => array_values($detail)]);
+
+        return $detail;
+    }
+
+
+    public static function updateCartItemPrice(Cart $cart): array{
+        $cartItems = [];
+        $tariffsQuery = [];
+
+        foreach ($cart['detail'] as $key => $item) {
+            if ($item['type'] === 'wallet' && $item['variety'] === 'custom') {
+                $cartItems[] = [
+                    'type' => $item['type'],
+                    'variety' => $item['variety'],
+                    'price' => $item['price']
+                ];
+            } else {
+                $tariffsQuery[] = [
+                    'type' => $item['type'],
+                    'variety' => $item['variety'],
+                ];
             }
         }
 
-        return $items;
+        // nothing to search in tariff table
+        if(empty($tariffsQuery))
+            return $cartItems;
+
+        // search the tariff table
+        $tariffs = Tariff::where('status', true)
+            ->where(function ($query) use ($tariffsQuery) {
+                foreach ($tariffsQuery as $condition)
+                    $query->orWhere($condition);
+            })
+            ->get()
+            ->keyBy(fn ($tariff) => $tariff->type . ':' . $tariff->variety);
+
+        // match the cart item and add price
+        foreach ($cart['detail'] as $item) {
+            $key = $item['type'] . ':' . $item['variety'];
+
+            if ($tariffs->has($key)) {
+                $tariff = $tariffs->get($key);
+                $cartItems[] = [
+                    'type' => $item['type'],
+                    'variety' => $item['variety'],
+                    'price' => $tariff->price
+                ];
+            }
+        }
+
+        return $cartItems;
     }
 
     public static function totalPrice(Cart $cart): int{

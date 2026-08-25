@@ -31,7 +31,7 @@ class Tariff extends Model{
     //==================================================| Relations |==================================================\\
     //==================================================| Functions |==================================================\\
     public static function get_membership(): Collection{
-        return self::select('id', 'price', 'detail')
+        return self::select('variety', 'price', 'detail')
         ->where([
             'type' => 'membership',
             'status' => true,

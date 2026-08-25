@@ -9,6 +9,7 @@ use App\Models\Tariff;
 use App\Models\User;
 use App\Payment\Payment;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +20,13 @@ class InvoiceController extends Controller
 {
     /**
      * redirect to bank
-     * @param Register $register
+     * @param Cart $cart
+     * @return RedirectResponse
      */
     public function redirectToBank(Cart $cart){
         $cart->update(['lock_status' => true]);// lock the cart
 
-        $invoice = $this->_moveCartToInvoice($cart);
+        $invoice = $this->_moveCartToInvoice($cart);// get the lastest price
 
         // redirect to back
         // todo: add TAX to price
@@ -81,32 +83,46 @@ class InvoiceController extends Controller
      * نهایی کردن سفارش
      * @param Invoice $invoice
      * @return void
+     * @throws \Throwable
      */
     private function _finalize(Invoice $invoice): void{
-        $invoice->update(['status' => 'paid']);
-
         $user = User::find($invoice->user_id);
         $invoiceItems = $invoice->invoiceItems;
 
-        foreach ($invoiceItems as $invoiceItem){
-            switch ($invoiceItem->type){
-                //------------------------------| membership
-                case 'membership':
-                    $tariff = Tariff::where([
-                        'type' => $invoiceItem->type,
-                        'variety' => $invoiceItem->variety,
-                    ])->first();
+        DB::transaction(function () use ($user, $invoice, $invoiceItems) {
+            foreach ($invoiceItems as $invoiceItem){
+                switch ($invoiceItem->type){
+                    //------------------------------| membership
+                    case 'membership':
+                        $tariff = Tariff::where([
+                            'type' => $invoiceItem->type,
+                            'variety' => $invoiceItem->variety,
+                        ])->first();
+                        if (!$tariff)
+                            throw new \RuntimeException("تعرفه‌ی مربوط به آیتم فاکتور #{$invoiceItem->id} پیدا نشد");
 
-                    $user->update(['membership_expires_at' => Carbon::now()->addDays($tariff['detail']['duration'])->toDateString()]);
-                    break;
+                        // increate user membership_expires_at
+                        $baseDate = ($user->membership_expires_at && Carbon::parse($user->membership_expires_at)->isFuture())
+                            ? Carbon::parse($user->membership_expires_at)
+                            : Carbon::now();
+                        $user->update(['membership_expires_at' => $baseDate->addDays($tariff['detail']['duration'])->toDateString()]);
+                        break;
                     //------------------------------| wallet
                     case 'wallet':
                         $user->update(['balance' => $user->balance + $invoiceItem->price]);
-                    break;
+                        break;
+                }
             }
-        }
 
-        Cart::where('user_id', $invoice->user_id)->delete();
+            // delete locked cart
+            Cart::query()
+                ->where('user_id', $invoice->user_id)
+                ->whereNotNull('lock_status')
+                ->delete();
+
+            // end invoice process
+            $invoice->update(['status' => 'paid']);
+        });
     }
 
 
@@ -120,7 +136,7 @@ class InvoiceController extends Controller
             ->orderByDesc('created_at')
             ->first();
 
-        $cartItems = Cart::prepareCartToInvoice($cart);
+        $cartItems = Cart::updateCartItemPrice($cart);
 
         if($invoice){
             $invoiceItems = $invoice->invoiceItems->toArray();
@@ -131,7 +147,8 @@ class InvoiceController extends Controller
                 ->sort()
                 ->values()
                 ->all();
-            if($mapAndSort($invoiceItems) === $mapAndSort($cartItems)) return $invoice;// nothing changed
+            if($mapAndSort($invoiceItems) === $mapAndSort($cartItems))
+                return $invoice;// nothing changed, continue with this invoice
         }
 
         // create a new invoice

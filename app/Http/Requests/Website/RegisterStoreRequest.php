@@ -26,11 +26,11 @@ class RegisterStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'membershipPlan' => 'required|integer|max:10',
-            'mobile'         => ['required', new mobile()],
-            'national_code'  => ['required', new national_code()],
-            'first_name'     => 'required|string|max:50',
-            'last_name'      => 'required|string|max:50',
+            'tariff_id'     => 'required|integer|max:10',
+            'mobile'        => ['required', new mobile()],
+            'national_code' => ['required', new national_code()],
+            'first_name'    => 'required|string|max:50',
+            'last_name'     => 'required|string|max:50',
         ];
     }
 
