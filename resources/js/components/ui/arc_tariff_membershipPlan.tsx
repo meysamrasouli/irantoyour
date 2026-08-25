@@ -31,7 +31,7 @@ export default function ArcTariffMembershipPlan({ value, setValue, plans }: ArcM
                 <li
                     key={index}
                     className={item.variety === value.variety ? 'active' : ''}
-                    onClick={onclickPlan(index)}
+                    onClick={()=>onclickPlan(index)}
                 >
                     <div className="plan-title">{`اشتراک ${item.detail.duration_fa}`}</div>
                     <div className="plan-price">

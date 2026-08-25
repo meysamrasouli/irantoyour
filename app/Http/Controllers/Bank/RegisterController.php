@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bank;
 
 use App\Models\Invoice;
 use App\Models\Register;
+use App\Models\Tariff;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Payment\Payment;
@@ -20,16 +21,22 @@ class RegisterController extends Controller
      * @throws \Throwable
      */
     public function redirectToBank(Register $register){
-        $price = $register->tariff->price;// get the latest price
+        // get the latest price
+        $tariff = Tariff::query()
+            ->where([
+                'type' => 'membership',
+                'variety' => $register->cart_item['variety'],
+                'status' => true,
+            ])->firstOrFail();
 
-        if($price > 0){
+        if($tariff->price > 0){
             // redirect to back
             // todo: add TAX to price
             try {
                 return (new Payment('Mellat'))->pay(
                     Register::class,
                     $register->id,
-                    $price * 10,// تبدیل به ریال
+                    $tariff->price * 10,// تبدیل به ریال
                     env('APP_URL').'/bank-callback/register/'.$register->id
                 );
             } catch (MellatException|\Exception $e){
@@ -76,7 +83,11 @@ class RegisterController extends Controller
      * @throws \Throwable
      */
     private function _finalize(Register $register): void{
-        $tariff = $register->tariff;
+        $tariff = Tariff::query()
+            ->where([
+                'type' => 'membership',
+                'variety' => $register->cart_item['variety'],
+            ])->first();
 
         // atomic
         DB::transaction(function () use ($register, $tariff) {

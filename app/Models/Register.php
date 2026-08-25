@@ -9,20 +9,16 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 class Register extends Model {
     protected $fillable = [
         'user_id',
-        'tariff_id',
         'mobile',
         'first_name',
         'last_name',
         'national_code',
+        'cart_item',
     ];
 
     //==================================================| Relations |==================================================\\
     public function user(): BelongsTo{
         return $this->BelongsTo(User::class);
-    }
-
-    public function tariff(): BelongsTo{
-        return $this->BelongsTo(Tariff::class);
     }
 
     public function latestTransaction(): morphOne{

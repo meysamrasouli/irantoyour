@@ -26,6 +26,9 @@ class RegisterController extends Controller
         ]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function store(RegisterStoreRequest $request){
         $inputData = $request->validated();
 
@@ -33,7 +36,7 @@ class RegisterController extends Controller
             'mobile' => $inputData['mobile'],
             'national_code' => $inputData['national_code'],
         ],[
-            'tariff_id' => $inputData['membershipPlan'],
+            'cart_item' => $inputData['cart_item'],
             'first_name' => $inputData['first_name'],
             'last_name' => $inputData['last_name'],
         ]);

@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class mobile implements ValidationRule
+class PhoneRule implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -14,9 +14,9 @@ class mobile implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if(!preg_match("/^09[0-9]{9}$/",$value)){
-            // $fail(':attribute is not a mobile number.');
-            $fail('validation.mobile')->translate();// lang/en/validation.mobile
+        if(!preg_match("/0[0-9]{10}$/",$value)){
+            // $fail(':attribute is not a phone number.');
+            $fail('validation.phone')->translate();// lang/en/validation.phone
         }
     }
 }

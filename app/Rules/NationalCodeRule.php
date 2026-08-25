@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class national_code implements ValidationRule
+class NationalCodeRule implements ValidationRule
 {
     /**
      * Run the validation rule.

@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Website;
 
 use App\Models\Register;
-use App\Rules\mobile;
-use App\Rules\national_code;
+use App\Rules\CartItemRule;
+use App\Rules\MobileRule;
+use App\Rules\NationalCodeRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -26,9 +27,9 @@ class RegisterStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tariff_id'     => 'required|integer|max:10',
-            'mobile'        => ['required', new mobile()],
-            'national_code' => ['required', new national_code()],
+            'cart_item'     => ['required', new CartItemRule()],
+            'mobile'        => ['required', new MobileRule()],
+            'national_code' => ['required', new NationalCodeRule()],
             'first_name'    => 'required|string|max:50',
             'last_name'     => 'required|string|max:50',
         ];

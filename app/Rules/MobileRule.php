@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class postal_code implements ValidationRule
+class MobileRule implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -14,9 +14,9 @@ class postal_code implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if(!preg_match("/^[0-9]{10}$/",$value)){
-            // $fail(':attribute is not a postal code.');
-            $fail('validation.postal_code')->translate();// lang/en/validation.postal_code
+        if(!preg_match("/^09[0-9]{9}$/",$value)){
+            // $fail(':attribute is not a mobile number.');
+            $fail('validation.mobile')->translate();// lang/en/validation.mobile
         }
     }
 }

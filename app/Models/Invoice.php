@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Invoice extends Model
 {
@@ -32,6 +33,10 @@ class Invoice extends Model
 
     public function transactions(): MorphMany{
         return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
+    public function latestTransaction(): MorphOne{
+        return $this->morphOne(Transaction::class, 'transactionable')->latest();
     }
 
     //==================================================| Functions |==================================================\\

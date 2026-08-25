@@ -51,7 +51,11 @@ export default function Register(controllerProps: ControllerPropsInterface) {
     const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید نهایی']// step progress
     const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
-        cart: {},
+        cart: {
+            type: 'membership',
+            variety: '',
+            price: 0,
+        },
         mobile: '',
         national_code: '',
         first_name: '',
