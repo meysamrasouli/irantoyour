@@ -14,7 +14,7 @@ interface ControllerPropsInterface {
     pageDetail: PageDetailInterface,
 }
 export interface FormDataInterface {
-    cart: CartInterface;
+    cart_item: Partial<CartInterface>;
     mobile: string;
     national_code: string;
     first_name: string;
@@ -37,8 +37,8 @@ export function validateRegisterField(
             return validateField('first_name', ['notEmpty', 'string_fa'], { value });
         case 'last_name':
             return validateField('last_name', ['notEmpty', 'string_fa'], { value });
-        case 'cart':
-            return validateField('cart', ['notEmpty_object'], {
+        case 'cart_item':
+            return validateField('cart_item', ['notEmpty_object'], {
                 value,
                 customError: value ? undefined : 'لطفاً یک پلن انتخاب کنید',
             });
@@ -51,11 +51,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
     const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید نهایی']// step progress
     const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
-        cart: {
-            type: 'membership',
-            variety: '',
-            price: 0,
-        },
+        cart_item: {},
         mobile: '',
         national_code: '',
         first_name: '',
@@ -65,7 +61,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
     //==============================| Event
     const validateStep = (stepIndex: number): boolean => {
         const fieldsInEveryStep: Record<number, (keyof FormDataInterface)[]> = {
-            0: ['cart'],
+            0: ['cart_item'],
             1: ['mobile', 'national_code', 'first_name', 'last_name'],
         };
         const fields = fieldsInEveryStep[stepIndex];
@@ -95,7 +91,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
         });
     };
 
-    const selectedPlan = controllerProps.list_plan.find((item) => item.variety === form.data.cart.variety);
+    const selectedPlan = controllerProps.list_plan.find((item) => item.variety === form.data.cart_item.variety);
 
     return (
         <>
@@ -116,8 +112,8 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                     {progressStepIndex === 0 && (
                                         <li>
                                             <ArcTariffMembershipPlan
-                                                value={form.data.cart}
-                                                setValue={(value) => form.setData('cart', value)}
+                                                value={form.data.cart_item}
+                                                setValue={(value) => form.setData('cart_item', value)}
                                                 plans={controllerProps.list_plan}
                                             />
                                         </li>
@@ -145,7 +141,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                 </tr>
                                                 <tr>
                                                     <th>پلن انتخابی</th><td>
-                                                    {selectedPlan ? `اشتراک ${selectedPlan.detail.duration} ` : 'پلنی انتخاب نشده است'}</td>
+                                                    {selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</td>
                                                 </tr>
                                                 </tbody>
                                                 <tfoot>

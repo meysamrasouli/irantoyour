@@ -323,3 +323,21 @@ main.register{
         }
     }
 }
+//==================================================| bank callback
+main.bank-callback{
+    section.callback-result{
+        & > div{
+            margin: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+
+            img{
+                width: 100px;
+            }
+        }
+    }
+}

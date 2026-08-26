@@ -73,7 +73,8 @@ class InvoiceController extends Controller
             $error = $e->getMessage();
         }
 
-        return inertia::render('Bank/callback',[
+        return inertia::render('bank/callback',[
+            'page' => 'invoice',
             'error' => $error,
             'redirectUrl' => (empty($error)) ? '/profile' : '/profile/cart'
         ]);

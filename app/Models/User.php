@@ -16,7 +16,7 @@ class User extends Authenticatable
         'mobile',
         'first_name',
         'last_name',
-        'national_id_number',
+        'national_code',
         'email',
         'balance',
         'sign_in_from',

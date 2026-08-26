@@ -11,7 +11,7 @@ export interface PlanInterface {
     };
 }
 interface ArcMembershipPlanPropsInterface {
-    value: CartInterface;
+    value: Partial<CartInterface>;
     setValue: (value: CartInterface) => void;
     plans: PlanInterface[];
 }

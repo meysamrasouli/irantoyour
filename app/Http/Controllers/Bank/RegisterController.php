@@ -29,23 +29,40 @@ class RegisterController extends Controller
                 'status' => true,
             ])->firstOrFail();
 
-        if($tariff->price > 0){
-            // redirect to back
-            // todo: add TAX to price
-            try {
-                return (new Payment('Mellat'))->pay(
-                    Register::class,
-                    $register->id,
-                    $tariff->price * 10,// تبدیل به ریال
-                    env('APP_URL').'/bank-callback/register/'.$register->id
-                );
-            } catch (MellatException|\Exception $e){
-                return back()->withErrors($e->getMessage());
-            }
-        }else {
-            $this->_finalize($register);
-            return Inertia::location('/login');// redirect with a full reload
-        }
+
+        /**------------------------------
+         * skip bank for test
+         * ------------------------------
+        */
+        //
+        Transaction::create([
+            'transactionable_type' => Register::class,
+            'transactionable_id'   => $register->id,
+            'gateway'              => 'Mellat',
+            'amount'               => $tariff->price * 10,
+            'ip'                   => \Illuminate\Support\Facades\Request::getClientIp(),
+            'status'               => 'SUCCESS',
+        ]);
+        return Inertia::location('/bank-callback/register/'.$register->id);
+
+
+//        if($tariff->price > 0){
+//            // redirect to back
+//            // todo: add TAX to price
+//            try {
+//                return (new Payment('Mellat'))->pay(
+//                    Register::class,
+//                    $register->id,
+//                    $tariff->price * 10,// تبدیل به ریال
+//                    env('APP_URL').'/bank-callback/register/'.$register->id
+//                );
+//            } catch (MellatException|\Exception $e){
+//                return back()->withErrors($e->getMessage());
+//            }
+//        }else {
+//            $this->_finalize($register);
+//            return Inertia::location('/login');// redirect with a full reload
+//        }
     }
 
     /**
@@ -63,8 +80,8 @@ class RegisterController extends Controller
             try {
                 $lastTransaction = $register->latestTransaction;
 
-                $payment = new Payment($lastTransaction->gateway);
-                $bankDetail = $payment->verify($request);
+                //$payment = new Payment($lastTransaction->gateway);
+                //$bankDetail = $payment->verify($request);
 
                 $this->_finalize($register);
 
@@ -73,7 +90,8 @@ class RegisterController extends Controller
             }
         }
 
-        return inertia::render('Bank/callback',[
+        return inertia::render('bank/callback',[
+            'page' => 'register',
             'error' => $error,
             'redirectUrl' => (empty($error)) ? '/login' : '/register'
         ]);

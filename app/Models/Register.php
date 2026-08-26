@@ -16,6 +16,12 @@ class Register extends Model {
         'cart_item',
     ];
 
+    protected function casts(): array{
+        return [
+            'cart_item' => 'array',
+        ];
+    }
+
     //==================================================| Relations |==================================================\\
     public function user(): BelongsTo{
         return $this->BelongsTo(User::class);
