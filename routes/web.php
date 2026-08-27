@@ -10,6 +10,24 @@ use \App\Http\Controllers\Dashboard;
 use \App\Http\Controllers\DataTable;
 
 
+//=================================================| AUTH |==================================================\\
+//========================================| REGISTER
+Route::prefix('register-auth')->name('auth.register.')->group(function () {
+    Route::post('send-otp', [Auth\RegisterController::class, 'sendOTP'])->name('send-otp');
+    Route::post('/', [Auth\RegisterController::class, 'checkOtp'])->name('check-otp');
+});
+//========================================| USER
+Route::prefix('login')->middleware(['guest'])->name('auth.user.')->group(function () {
+    Route::post('send-otp', [Auth\UserController::class, 'sendOTP'])->name('send-otp');
+    Route::post('/', [Auth\UserController::class, 'login'])->name('login');
+
+    Route::get('/', [Auth\UserController::class, 'index'])->name('login.index');
+});
+
+//========================================| LOGOUT
+Route::post('logout', [Auth\UserController::class, 'logout'])->name('logout');
+
+
 //==================================================| WEBSITE |==================================================\\
 Route::get('/', [Website\WebsiteController::class, 'index']);
 Route::get('about', [Website\WebsiteController::class, 'about']);

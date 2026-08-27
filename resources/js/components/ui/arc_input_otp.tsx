@@ -118,7 +118,7 @@ export default function ArcOtpInput({ inputCount, value, setValue, onComplete, d
         }
     };
 
-    const onPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const onPaste = (e: React.ClipboardEvent<HTMLUListElement>) => {
         e.preventDefault();
 
         const pasteData = e.clipboardData.getData('text').trim();
@@ -131,30 +131,31 @@ export default function ArcOtpInput({ inputCount, value, setValue, onComplete, d
     };
 
     return (
-        <div
+        <ul
             className="arc-input-otp"
-            dir="ltr"
             role="group"
             aria-label={ariaLabel}
             onPaste={onPaste}
         >
             {output.map((digit, index) => (
-                <input
-                    key={index}
-                    ref={(el) => { inputRefs.current[index] = el; }}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    autoComplete={index === 0 ? 'one-time-code' : 'off'} // mobile sms autofill
-                    maxLength={1}
-                    value={digit}
-                    disabled={disabled || index >= enabledCount}
-                    aria-label={`رقم ${index + 1} از ${inputCount}`}
-                    onFocus={(e) => e.target.select()}
-                    onChange={(e) => onChangeInput(e, index)}
-                    onKeyDown={(e) => onKeyDown(e, index)}
-                />
+                <li className={`${(index+1 === enabledCount) && 'active'}`}>
+                    <input
+                        key={index}
+                        ref={(el) => { inputRefs.current[index] = el; }}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        autoComplete={index === 0 ? 'one-time-code' : 'off'} // mobile sms autofill
+                        maxLength={1}
+                        value={digit}
+                        disabled={disabled || index >= enabledCount}
+                        aria-label={`رقم ${index + 1} از ${inputCount}`}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => onChangeInput(e, index)}
+                        onKeyDown={(e) => onKeyDown(e, index)}
+                    />
+                </li>
             ))}
-        </div>
+        </ul>
     );
 }

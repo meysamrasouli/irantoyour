@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import * as React from "react";
 import ArcTariffMembershipPlan, {PlanInterface} from "@/components/ui/arc_tariff_membershipPlan";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
@@ -8,6 +8,7 @@ import {useFormHandler} from "@/shared/hooks/useFormSubmit";
 import UserDetail from "@/components/website/register/userDetail";
 import { PageDetailInterface } from "@/shared/types/pageDetailInterface";
 import { CartInterface } from "@/shared/types/cartInterface";
+import ArcOtp, {ArcOtpRefInterface, MessageInterface} from "@/components/ui/arc_otp";
 
 interface ControllerPropsInterface {
     list_plan: PlanInterface[],
@@ -19,6 +20,7 @@ export interface FormDataInterface {
     national_code: string;
     first_name: string;
     last_name: string;
+    otp: string,
 }
 
 type RegisterFormHandler = ReturnType<typeof useFormHandler<FormDataInterface>>;
@@ -50,12 +52,16 @@ export function validateRegisterField(
 export default function Register(controllerProps: ControllerPropsInterface) {
     const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید نهایی']// step progress
     const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
+    const otpRef = useRef<ArcOtpRefInterface>(null)
+    const [message, setMessage] = useState<MessageInterface>()
+    const [isOtpVerified, setIsOtpVerified] = useState<boolean>(false)
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
         cart_item: {},
-        mobile: '',
-        national_code: '',
-        first_name: '',
-        last_name: '',
+        mobile: '09127979335',
+        national_code: '0079544371',
+        first_name: 'احمد',
+        last_name: 'احمدی',
+        otp: '',
     });
 
     //==============================| Event
@@ -75,13 +81,29 @@ export default function Register(controllerProps: ControllerPropsInterface) {
         return isValid;
     };
 
-    const onclick_nextStep = () => {
+    const onClickNextStep = () => {
         if (!validateStep(progressStepIndex)) return;
 
-        setProgressStepIndex((progressStepIndex < progressStepList.length-1) ? progressStepIndex+1 : progressStepList.length-1)
+        const nextIndex: number = (progressStepIndex < progressStepList.length-1) ? progressStepIndex+1 : progressStepList.length-1
+
+        //------------------------------| before entering step 2 send otp
+        if(nextIndex === 2){
+            setMessage({ type: '', content: '' });
+            if(otpRef.current?.getMobileValue() !== form.data.mobile)
+                otpRef.current?.sendOtp()
+        }
+
+        setProgressStepIndex(nextIndex)
     }
-    const onclick_previousStep = () => {
-        setProgressStepIndex((progressStepIndex > 0) ? progressStepIndex-1 : 0)
+    const onClickPreviousStep = () => {
+        let previousStep: number = (progressStepIndex > 0) ? progressStepIndex-1 : 0
+
+        // skip the step 2
+        if(previousStep === 2){
+            previousStep = 1
+        }
+
+        setProgressStepIndex(previousStep)
     }
     const onClickSubmit = () => {
         // مرحله‌ی نهایی هم دوباره همه‌ی فیلدها رو چک می‌کنه (نه فقط مرحله فعلی) - محافظت نهایی قبل از ارسال به سرور
@@ -90,6 +112,10 @@ export default function Register(controllerProps: ControllerPropsInterface) {
             return validateRegisterField(field, form.data[field], validateField);
         });
     };
+
+    const onOtpComplete = () => {
+        console.log('finish')
+    }
 
     const selectedPlan = controllerProps.list_plan.find((item) => item.variety === form.data.cart_item.variety);
 
@@ -125,6 +151,8 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                     )}
                                     {progressStepIndex === 2 && (
                                         <li>
+                                            <div>{formError['general']}</div>
+
                                             <table>
                                                 <tbody>
                                                 <tr>
@@ -140,13 +168,25 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                     <th>کدملی</th><td>{ form.data.national_code }</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>پلن انتخابی</th><td>
-                                                    {selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</td>
+                                                    <th>پلن انتخابی</th>
+                                                    <td>{selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th></th>
                                                 </tr>
                                                 </tbody>
                                                 <tfoot>
                                                 <tr>
-                                                    <td colSpan={3}>{formError['general']}</td>
+                                                    <td colSpan={2}>
+                                                        <div>{ message?.content }</div>
+
+                                                        <ArcOtp page={'register'}
+                                                                ref={otpRef}
+                                                                mobile={form.data.mobile}
+                                                                setMessage={setMessage}
+                                                                onComplete={onOtpComplete}
+                                                        />
+                                                    </td>
                                                 </tr>
                                                 </tfoot>
                                             </table>
@@ -156,12 +196,12 @@ export default function Register(controllerProps: ControllerPropsInterface) {
 
                                 <div className="button-container-center">
                                     {progressStepIndex < progressStepList.length - 1 ? (
-                                        <button type="button" className="custom-button-primary" onClick={()=>onclick_nextStep()}>بعدی</button>
+                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>بعدی</button>
                                     ) : (
                                         <button type="button" className="custom-button-primary" onClick={onClickSubmit}>ثبت نهایی و پرداخت</button>
                                     )}
                                     {progressStepIndex > 0 && (
-                                        <button type="button" className="custom-button-trans-text" onClick={onclick_previousStep}>قبلی</button>
+                                        <button type="button" className="custom-button-trans-text" onClick={onClickPreviousStep}>قبلی</button>
                                     )}
                                 </div>
                             </div>

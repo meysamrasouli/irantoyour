@@ -143,7 +143,6 @@ export default function Login() {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    dir="ltr"
                                     inputMode="numeric"
                                     maxLength={11}
                                     value={mobile}
@@ -164,7 +163,7 @@ export default function Login() {
                         {step === 2 && (
                             <div className="login-steps">
                                 <div className="otp-header">
-                                    <span dir="ltr">{mobile}</span>
+                                    <span>{mobile}</span>
                                     <button type="button" className="link-button" onClick={onClickEditMobile}>ویرایش شماره</button>
                                 </div>
 
@@ -178,9 +177,7 @@ export default function Login() {
 
                                     <button type="button" onClick={onClickSendOtp} disabled={sendOtpDisabled} className="custom-button-trans-primary">
                                         {countdownTimer > 0 ? (
-                                            <span>
-                                                اعتبار کد یکبار مصرف تا: <ArcCountdownTimer until={countdownTimer} type="m:s" onEnded={onEndedCountdown} />
-                                            </span>
+                                            <span>اعتبار کد یکبار مصرف تا: <ArcCountdownTimer until={countdownTimer} type="m:s" onEnded={onEndedCountdown} /></span>
                                         ) : (
                                             <span><i className="fa-regular fa-rotate-left" /> ارسال مجدد</span>
                                         )}

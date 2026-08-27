@@ -74,7 +74,7 @@ class Cart extends Model{
         }else{
             Cart::create([
                 'user_id' => Auth::guard('web')->id(),
-                'detail' => [$detail],
+                'detail' => $detail,
             ]);
         }
 
@@ -164,10 +164,12 @@ class Cart extends Model{
             }
         }
 
-        $price += Tariff::where(function ($query) use ($tariffsQuery) {
-            foreach ($tariffsQuery as $condition)
-                $query->orWhere($condition);
-        })->sum('price');
+        if (!empty($tariffsQuery)) {
+            $price += Tariff::where(function ($query) use ($tariffsQuery) {
+                foreach ($tariffsQuery as $condition)
+                    $query->orWhere($condition);
+            })->sum('price');
+        }
 
         return $price;
     }

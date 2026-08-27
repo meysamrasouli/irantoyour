@@ -1115,3 +1115,72 @@ a[class*="custom-button"]{
         }
     }
 }
+//==============================| input-otp
+.arc-input-otp{
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    gap: 10px;
+
+    li {
+        width: 52px;
+        height: 52px;
+        padding: 2px;
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #ddd;
+
+        &.active{
+            &:before{
+                content: '';
+                position: absolute;
+                inset: -50%;
+                background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, $color-primary 360deg);
+                animation: rotateBorder 3s linear infinite;
+                z-index: 1;
+            }
+            @keyframes rotateBorder {
+                0% {transform: rotate(0deg);}
+                100% {transform: rotate(360deg);}
+            }
+        }
+        &:not(.active):has(input:not(:disabled)){
+            background: $color-primary;
+        }
+        input{
+            width: 48px;
+            height: 48px;
+            text-align: center;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+
+            &:disabled{
+                background-color: #f7f7f7;
+            }
+        }
+    }
+}
+//==============================| countdown timer
+.arc-countdown-timer{
+    display: flex;
+    flex-direction: row-reverse;
+}
+//==============================| otp
+.arc-otp{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .avc-countdown-timer{
+        li:not(:last-child):before{
+            content: ':';
+            padding: 2px;
+        }
+    }
+}
