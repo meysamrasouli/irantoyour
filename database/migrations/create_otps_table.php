@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('otps', function (Blueprint $table) {
             $table->id();
             $table->string('mobile', length: 11)->unique();
+            $table->string('ip', length: 20);
             $table->string('code', length: 5);
             $table->integer('attempt')->default(0)->comment('تعداد تلاشها');
             $table->integer('sent_count')->default(0)->comment('تعداد کل پیام های ارسالی برای کاربر');

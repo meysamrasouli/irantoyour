@@ -1141,6 +1141,12 @@ a[class*="custom-button"]{
                 animation: rotateBorder 3s linear infinite;
                 z-index: 1;
             }
+            &:has(input:not(:placeholder-shown))::before{// modern browsers support
+                background: $color-primary;
+            }
+            &:has(input:placeholder-shown)::before{// modern browsers support
+                background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, $color-primary 360deg);
+            }
             @keyframes rotateBorder {
                 0% {transform: rotate(0deg);}
                 100% {transform: rotate(360deg);}
@@ -1167,8 +1173,13 @@ a[class*="custom-button"]{
 }
 //==============================| countdown timer
 .arc-countdown-timer{
-    display: flex;
+    display: inline-flex;
     flex-direction: row-reverse;
+
+    li:not(:last-child):before{
+        content: ':';
+        padding: 2px;
+    }
 }
 //==============================| otp
 .arc-otp{
@@ -1177,10 +1188,7 @@ a[class*="custom-button"]{
     flex-direction: column;
     gap: 10px;
 
-    .avc-countdown-timer{
-        li:not(:last-child):before{
-            content: ':';
-            padding: 2px;
-        }
+    .arc-countdown-timer{
+        font-weight: bold;
     }
 }

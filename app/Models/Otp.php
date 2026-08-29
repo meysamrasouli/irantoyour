@@ -13,6 +13,7 @@ class Otp extends Model{
 
     protected $fillable = [
         'mobile',
+        'ip',
         'code',
         'attempt',
         'sent_count',

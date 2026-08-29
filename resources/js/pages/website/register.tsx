@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
-import {useRef, useState} from "react";
+import {useRef, useState, useEffect} from "react";
 import * as React from "react";
 import ArcTariffMembershipPlan, {PlanInterface} from "@/components/ui/arc_tariff_membershipPlan";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
@@ -44,6 +44,8 @@ export function validateRegisterField(
                 value,
                 customError: value ? undefined : 'لطفاً یک پلن انتخاب کنید',
             });
+        case 'otp':
+            return validateField('otp', ['notEmpty', 'integer', {length_fix: 5}], { value });
         default:
             return '';
     }
@@ -51,10 +53,10 @@ export function validateRegisterField(
 
 export default function Register(controllerProps: ControllerPropsInterface) {
     const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید موبایل', 'تایید نهایی']// step progress
-    const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
+    const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step progress index
     const otpRef = useRef<ArcOtpRefInterface>(null)
-    const [message, setMessage] = useState<MessageInterface>()
-    const [isOtpVerified, setIsOtpVerified] = useState<boolean>(false)
+    const otpDetail = useRef<{mobile: string, isValid: boolean}>({mobile: '', isValid: false}); // the last otp to user mobile
+    const [otpMessage, setOtpMessage] = useState<MessageInterface>()
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
         cart_item: {type: 'membership', variety: 'one-month', price: 0},
         mobile: '09127979335',
@@ -69,6 +71,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
         const fieldsInEveryStep: Record<number, (keyof FormDataInterface)[]> = {
             0: ['cart_item'],
             1: ['mobile', 'national_code', 'first_name', 'last_name'],
+            2: ['otp']
         };
         const fields = fieldsInEveryStep[stepIndex];
         if (!fields) return true;
@@ -84,17 +87,32 @@ export default function Register(controllerProps: ControllerPropsInterface) {
     const onClickNextStep = () => {
         if (!validateStep(progressStepIndex)) return;
 
-        const nextIndex: number = (progressStepIndex < progressStepList.length-1) ? progressStepIndex+1 : progressStepList.length-1
+        let nextIndex: number = (progressStepIndex < progressStepList.length-1) ? progressStepIndex+1 : progressStepList.length-1
 
-        //------------------------------| before entering step 2 send otp
+        // skip the step 2 if otp is already valid
         if(nextIndex === 2){
-            setMessage({ type: '', content: '' });
-            if(otpRef.current?.getMobileValue() !== form.data.mobile)
-                otpRef.current?.sendOtp()
+            setOtpMessage({ type: '', content: '' });
+
+            // check if the mobile number has changed, if so, send a new OTP
+            if(otpDetail.current.mobile !== form.data.mobile) {
+                otpDetail.current = {mobile: form.data.mobile, isValid: false};// reset the otp detail to the new mobile number
+
+                void otpRef.current?.sendOtp()?.catch(() => {
+                    setOtpMessage({type: 'error', content: 'خطا در ارسال کد تایید. لطفا دوباره تلاش کنید.'});
+                });
+            }else{
+                nextIndex++; // skip to the next step if the OTP is already valid
+            }
         }
 
         setProgressStepIndex(nextIndex)
     }
+    const onOtpComplete = () => {
+        otpDetail.current.isValid = true;
+        form.setData('otp', otpRef.current?.getOtpValue() || '');
+        onClickNextStep()
+    }
+
     const onClickPreviousStep = () => {
         let previousStep: number = (progressStepIndex > 0) ? progressStepIndex-1 : 0
 
@@ -105,17 +123,13 @@ export default function Register(controllerProps: ControllerPropsInterface) {
 
         setProgressStepIndex(previousStep)
     }
+
     const onClickSubmit = () => {
-        // مرحله‌ی نهایی هم دوباره همه‌ی فیلدها رو چک می‌کنه (نه فقط مرحله فعلی) - محافظت نهایی قبل از ارسال به سرور
         formSubmit({ method: 'post', action: '/register' }, (index) => {
             const field = index as keyof FormDataInterface;
             return validateRegisterField(field, form.data[field], validateField);
         });
     };
-
-    const onOtpComplete = () => {
-        console.log('finish')
-    }
 
     const selectedPlan = controllerProps.list_plan.find((item) => item.variety === form.data.cart_item.variety);
 
@@ -169,7 +183,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                     />
 
                                                     <div className="button-container-center">
-                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و مرحله بعد</button>
+                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و ادامه</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -181,30 +195,36 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                 <div className="guid-section">
                                                     <h2>تأیید شماره موبایل</h2>
                                                     <p>{`کد 5 رقمی به شماره ${form.data.mobile} پیامک شد. کد را وارد کنید.`}</p>
+                                                    <p>اعتبار کد ارسال شده به مدت 2 دقیقه می‌باشد.</p>
 
                                                     <button type="button" className="custom-button-trans-text" onClick={onClickPreviousStep}><i className="fa-regular fa-arrow-right icon-right"></i><span>بازگشت به مرحله قبل</span></button>
                                                 </div>
                                                 <div className="detail-section">
-                                                    {(message?.content) && (
-                                                        <div className="notification-error-container">
-                                                            <i className="fa-regular fa-exclamation-triangle"></i>
-                                                            <p>{ message?.content }</p>
-                                                        </div>
-                                                    )}
 
-                                                    <p>کد تایید ارسال شد. تلفن همراه خود را بررسی نمایید.</p>
+                                                    <div className="section-detail-info">
+                                                        <i className="fa-solid fa-shield-check"></i>
+
+                                                        {(otpMessage?.content) ? (
+                                                            <div className={`${otpMessage?.type === 'error' ? 'notification-error-container' : 'notification-info-container'}`}>
+                                                                <i className={`fa-regular ${otpMessage?.type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}`}></i>
+                                                                <p>{ otpMessage?.content }</p>
+                                                            </div>
+                                                        ) : (
+                                                            <p>کد تایید ارسال شد. تلفن همراه خود را بررسی نمایید.</p>
+                                                        )}
+                                                    </div>
 
                                                     <div className="otp-wrapper">
                                                         <ArcOtp page={'register'}
                                                                 ref={otpRef}
                                                                 mobile={form.data.mobile}
-                                                                setMessage={setMessage}
+                                                                setMessage={setOtpMessage}
                                                                 onComplete={onOtpComplete}
                                                         />
                                                     </div>
 
                                                     <div className="button-container-center">
-                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و مرحله بعد</button>
+                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و ادامه</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -212,42 +232,53 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                     )}
                                     {progressStepIndex === 3 && (
                                         <li>
-                                            <div>{formError['general']}</div>
+                                            <div className="split-section">
+                                                <div className="guid-section">
+                                                    <h2>بررسی و تأیید اطلاعات</h2>
+                                                    <p>اطلاعات وارد شده را بررسی و در صورت صحت، ثبت نهایی و پرداخت را انجام دهید.</p>
 
-                                            <table>
-                                                <tbody>
-                                                <tr>
-                                                    <th>شماره موبایل</th><td>{ form.data.mobile }</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>نام</th><td>{ form.data.first_name }</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>نام خانوادگی</th><td>{ form.data.last_name }</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>کدملی</th><td>{ form.data.national_code }</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>پلن انتخابی</th>
-                                                    <td>{selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th></th>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                                    <button type="button" className="custom-button-trans-text" onClick={onClickPreviousStep}><i className="fa-regular fa-arrow-right icon-right"></i><span>بازگشت به مرحله قبل</span></button>
+                                                </div>
+                                                <div className="detail-section">
+                                                    {formError['general'] && (
+                                                        <div className="notification-error-container">
+                                                            <i className="fa-regular fa-exclamation-triangle"></i>
+                                                            <p>{formError['general']}</p>
+                                                        </div>
+                                                    )}
+
+                                                    <table>
+                                                        <tbody>
+                                                            <tr>
+                                                                <th>شماره موبایل</th><td>{ form.data.mobile }</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>نام</th><td>{ form.data.first_name }</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>نام خانوادگی</th><td>{ form.data.last_name }</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>کدملی</th><td>{ form.data.national_code }</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>پلن انتخابی</th>
+                                                                <td>{selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th></th>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div className="button-container-center">
+                                                        <button type="button" className="custom-button-primary" onClick={onClickSubmit}>ثبت نهایی و پرداخت</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </li>
                                     )}
                                 </ul>
-
-                                <div className="button-container-center">
-                                    {progressStepIndex < progressStepList.length - 1 ? (
-                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>بعدی</button>
-                                    ) : (
-                                        <button type="button" className="custom-button-primary" onClick={onClickSubmit}>ثبت نهایی و پرداخت</button>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </section>

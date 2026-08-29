@@ -332,6 +332,18 @@ main.register{
                         background-color: $color-red-bg;
                         color: $color-red;
                     }
+                    .section-detail-info{
+                        text-align: center;
+
+                        i.fa-shield-check{
+                            margin-bottom: 20px;
+                            padding: 10px;
+                            font-size: $font-4xl;
+                            color: $color-white;
+                            background-color: $color-blue;
+                            border-radius: 50%;
+                        }
+                    }
                     .button-container-center{
                         button{
                             width: 100%;

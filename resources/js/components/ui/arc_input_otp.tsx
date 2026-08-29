@@ -147,6 +147,7 @@ export default function ArcOtpInput({ inputCount, value, setValue, onComplete, d
                         autoComplete={index === 0 ? 'one-time-code' : 'off'} // mobile sms autofill
                         maxLength={1}
                         value={digit}
+                        placeholder="_"
                         disabled={disabled || index >= enabledCount}
                         aria-label={`رقم ${index + 1} از ${inputCount}`}
                         onFocus={(e) => e.target.select()}

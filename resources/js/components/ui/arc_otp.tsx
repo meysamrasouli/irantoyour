@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useRef, useState, forwardRef, useImperativeHandle} from "react";
+import {useRef, useState, useEffect, forwardRef, useImperativeHandle} from "react";
 import ArcOtpInput from "@/components/ui/arc_input_otp";
 import ArcCountdownTimer from "@/components/ui/arc_countDownTimer";
 import {convertToEnglishDigits} from "@/shared/utils/convertUtils";
@@ -60,10 +60,10 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
                 const response = await axiosClient.post(loginUrl[page], { mobile: cleanMobile })
 
                 if (response.data === '') {
-                    setMessage({type: 'info', content: `کد امنیتی به شماره ${cleanMobile} ارسال شد`});
+                    //setMessage({type: 'info', content: `کد امنیتی به شماره ${cleanMobile} ارسال شد`});
                     setCountdownTimer(120);
                 } else {
-                    setMessage({type: 'error', content: 'برای ارسال مجدد منتظر بمانید'});
+                    setMessage({type: 'info', content: 'برای ارسال مجدد منتظر بمانید'});
                     setCountdownTimer(Number(response.data));
                 }
             } catch {
@@ -73,6 +73,11 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
                 isSendingOtpRef.current = false;
             }
         };
+        // send the otp as soon as mobile changed
+        useEffect(() => {
+            sendOtp().catch((reason) => {});
+        }, [mobile]);
+
         const onEndedCountdown = () => {
             setCountdownTimer(0);
             setSendOtpDisabled(false);
@@ -105,8 +110,12 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
             switch (page){
                 case 'register':
                     try {
-                        await axiosClient.post<{ token: string }>('/register-auth', { mobile: cleanMobile, otp: cleanOtp });
-                        onComplete?.()// callback function
+                        const response = await axiosClient.post<{ error: string }>('/register-auth', { mobile: cleanMobile, otp: cleanOtp });
+                        if(response.data.error === ''){
+                            onComplete?.()// callback function
+                        }else{
+                            setMessage({ type: 'error', content: response.data.error});
+                        }
                     } catch (error: any) {
                         setMessage({ type: 'error', content: error?.response?.data?.message ?? 'ورود ناموفق بود' });
                     }finally {
@@ -161,9 +170,9 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
                     onComplete={(value) => checkOtp(value)}
                 />
 
-                <button type="button" onClick={sendOtp} disabled={sendOtpDisabled} className="custom-button-trans-primary-text">
+                <button type="button" onClick={sendOtp} disabled={sendOtpDisabled} className="custom-button-trans-text">
                     {countdownTimer > 0 ? (
-                        <span>اعتبار کد یکبار مصرف تا: <ArcCountdownTimer until={countdownTimer} type="m:s" onEnded={onEndedCountdown} /></span>
+                        <span>ارسال مجدد کد تا <ArcCountdownTimer until={countdownTimer} type="m:s" onEnded={onEndedCountdown} /> دیگر</span>
                     ) : (
                         <span><i className="fa-regular fa-rotate-left icon-right" />ارسال مجدد</span>
                     )}

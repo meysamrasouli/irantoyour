@@ -28,6 +28,7 @@ class OtpController extends Controller
                 return $now->diffInSeconds($sendTime);// return remaining time
 
             $otp->update([
+                'ip' => request()->ip(),
                 'code' => $code,
                 'sent_count' => $otp->sent_count + 1,
                 'attempt' => 0,
@@ -36,6 +37,7 @@ class OtpController extends Controller
         }else{
             Otp::create([
                 'mobile' => $this->_mobile,
+                'ip' => request()->ip(),
                 'code' => $code,
             ]);
         }
@@ -48,6 +50,12 @@ class OtpController extends Controller
 
     public function check($code): string{
         $otp = Otp::where('mobile', $this->_mobile)->first();
+
+        //----------| ip
+        $mobileCount = Otp::where('ip', request()->ip())->count();
+        if($mobileCount >= 10) {
+            return "شما نمی‌توانید بیش از 10 شماره موبایل ثبت کنید.";
+        }
 
         //----------| exist
         if(!$otp) return "خطا در پردازش.  یک کد جدید دریافت کنید.";
