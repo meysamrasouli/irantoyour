@@ -42,11 +42,12 @@ $color-orange-darkest: #b54708;
 $color-orange-bg: #fef5e6;
 
 // Blue
-$color-blue-lightest: blue;
-$color-blue-light: blue;
-$color-blue: blue;
-$color-blue-dark: blue;
-$color-blue-darkest: blue;
+$color-blue-lightest: #C5E7FF;
+$color-blue-light: #7FD0FF;
+$color-blue: #19BDFF;
+$color-blue-dark: #009BD3;
+$color-blue-darkest: #004C6A;
+$color-blue-bg: #E4F3FF;
 
 // Gray
 $color-gray-bg: #f8fafc;
@@ -404,14 +405,13 @@ a[class*="custom-button"]{
 .custom-button-trans-text, .custom-icon-trans-text{
     background-color: transparent;
     border: solid 1px transparent;
+    color: $color-text-02;
 
     &:hover{
-        color: $color-primary;
-        border-color: $color-primary;
+        color: $color-text-01;
     }
     &:active{
-        color: $color-white;
-        background-color: $color-primary;
+        color: $color-text-01;
     }
 }
 //------------------------------| transparent text
@@ -497,8 +497,8 @@ a[class*="custom-button"]{
     }
 }
 .button-container-center{ justify-content: center; }
-.button-container-left{ justify-content: flex-end; }
-.button-container-right{ justify-content: flex-start; }
+.button-container-left{ justify-content: flex-start; }
+.button-container-right{ justify-content: flex-end; }
 //==============================| Form Container
 .form-container{
     display: grid;

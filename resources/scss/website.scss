@@ -290,36 +290,81 @@ main.index{
 main.register{
     section.user-register{
         .step-form{
-            padding: 0 200px;
+            padding: 0 230px;
             display: flex;
             flex-direction: column;
             gap: 50px;
 
-            //.arc-membership-plan{}
-            .user-detail{
-                width: 400px;
-                margin: 0 auto;
-                padding: 20px;
-                border: solid 1px $color-border;
-                border-radius: $radius-lg;
 
-                .user-detail-title{
-                    padding-bottom: 10px;
-                    border-bottom: solid 1px $color-border;
+            .split-section{
+                display: grid;
+                grid-template: "detail guid" 400px / 1fr 300px;
+                border-radius: $radius-lg;
+                box-shadow: $box-shadow-01;
+
+                .detail-section{
+                    grid-area: detail;
+                    padding: 50px 50px 30px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    text-align: center;
+
+                    .notification-info-container, .notification-error-container{
+                        padding: 10px 20px;
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        border-radius: $radius-md;
+                        font-size: $font-sm;
+
+                        i{
+                            font-size: $font-lg;
+                        }
+                    }
+                    .notification-info-container{
+                        border: solid 1px $color-blue-dark;
+                        background-color: $color-blue-bg;
+                        color: $color-blue-dark;
+                    }
+                    .notification-error-container{
+                        border: solid 1px $color-red;
+                        background-color: $color-red-bg;
+                        color: $color-red;
+                    }
+                    .button-container-center{
+                        button{
+                            width: 100%;
+                            margin: 0 20%;
+                        }
+                    }
+                }
+                .guid-section{
+                    grid-area: guid;
+                    padding: 30px 40px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: start;
+                    background-color: $color-gray-bg;
 
                     h2{
-                        font-size: $font-lg;
+                        margin-bottom: 20px;
                     }
                     p{
                         color: $color-text-02;
                         font-size: $font-sm;
                     }
-                }
-                ul.form-container{
-                    margin-top: 20px;
-                    grid-template-columns: 1fr;
+                    button{
+                        margin-top: auto;
+                    }
                 }
             }
+
+            .otp-wrapper{
+                display: flex;
+                justify-content: center;
+            }
+
         }
     }
 }

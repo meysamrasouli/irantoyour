@@ -50,13 +50,13 @@ export function validateRegisterField(
 }
 
 export default function Register(controllerProps: ControllerPropsInterface) {
-    const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید نهایی']// step progress
+    const progressStepList: string[] = ['انتخاب پلن', 'اطلاعات کاربری', 'تایید موبایل', 'تایید نهایی']// step progress
     const [progressStepIndex, setProgressStepIndex] = useState<number>(0)// step form
     const otpRef = useRef<ArcOtpRefInterface>(null)
     const [message, setMessage] = useState<MessageInterface>()
     const [isOtpVerified, setIsOtpVerified] = useState<boolean>(false)
     const { form, formError, validateField, formSubmit } = useFormHandler<FormDataInterface>({
-        cart_item: {},
+        cart_item: {type: 'membership', variety: 'one-month', price: 0},
         mobile: '09127979335',
         national_code: '0079544371',
         first_name: 'احمد',
@@ -139,17 +139,78 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                         <li>
                                             <ArcTariffMembershipPlan
                                                 value={form.data.cart_item}
-                                                setValue={(value) => form.setData('cart_item', value)}
+                                                setValue={(value) => {
+                                                    form.setData('cart_item', value)
+                                                    onClickNextStep()
+                                                }}
                                                 plans={controllerProps.list_plan}
                                             />
                                         </li>
                                     )}
                                     {progressStepIndex === 1 && (
                                         <li>
-                                            <UserDetail form={form} formError={formError} validateField={validateField} />
+                                            <div className="split-section">
+                                                <div className="guid-section">
+                                                    <h2>اطلاعات شخصی</h2>
+                                                    <p>مشخصات فردی خود را جهت احراز هویت و ثبت آگهی وارد نمایید.</p>
+                                                    <p>مشخصات مالک شماره موبایل وارد شده باید با اطلاعات نام و کدملی همخوانی داشته باشد</p>
+
+                                                    <button type="button" className="custom-button-trans-text" onClick={onClickPreviousStep}><i className="fa-regular fa-arrow-right icon-right"></i><span>بازگشت به مرحله قبل</span></button>
+                                                </div>
+                                                <div className="detail-section">
+                                                    <div className="notification-info-container">
+                                                        <i className="fa-regular fa-info-circle"></i>
+                                                        <p>مشخصات مالک <b>شماره موبایل</b> وارد شده باید با اطلاعات <b>نام و کدملی</b> همخوانی داشته باشد</p>
+                                                    </div>
+
+                                                    <UserDetail form={form}
+                                                                formError={formError}
+                                                                validateField={validateField}
+                                                    />
+
+                                                    <div className="button-container-center">
+                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و مرحله بعد</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </li>
                                     )}
                                     {progressStepIndex === 2 && (
+                                        <li>
+                                            <div className="split-section">
+                                                <div className="guid-section">
+                                                    <h2>تأیید شماره موبایل</h2>
+                                                    <p>{`کد 5 رقمی به شماره ${form.data.mobile} پیامک شد. کد را وارد کنید.`}</p>
+
+                                                    <button type="button" className="custom-button-trans-text" onClick={onClickPreviousStep}><i className="fa-regular fa-arrow-right icon-right"></i><span>بازگشت به مرحله قبل</span></button>
+                                                </div>
+                                                <div className="detail-section">
+                                                    {(message?.content) && (
+                                                        <div className="notification-error-container">
+                                                            <i className="fa-regular fa-exclamation-triangle"></i>
+                                                            <p>{ message?.content }</p>
+                                                        </div>
+                                                    )}
+
+                                                    <p>کد تایید ارسال شد. تلفن همراه خود را بررسی نمایید.</p>
+
+                                                    <div className="otp-wrapper">
+                                                        <ArcOtp page={'register'}
+                                                                ref={otpRef}
+                                                                mobile={form.data.mobile}
+                                                                setMessage={setMessage}
+                                                                onComplete={onOtpComplete}
+                                                        />
+                                                    </div>
+
+                                                    <div className="button-container-center">
+                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و مرحله بعد</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    )}
+                                    {progressStepIndex === 3 && (
                                         <li>
                                             <div>{formError['general']}</div>
 
@@ -175,20 +236,6 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                     <th></th>
                                                 </tr>
                                                 </tbody>
-                                                <tfoot>
-                                                <tr>
-                                                    <td colSpan={2}>
-                                                        <div>{ message?.content }</div>
-
-                                                        <ArcOtp page={'register'}
-                                                                ref={otpRef}
-                                                                mobile={form.data.mobile}
-                                                                setMessage={setMessage}
-                                                                onComplete={onOtpComplete}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                </tfoot>
                                             </table>
                                         </li>
                                     )}
@@ -199,9 +246,6 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                         <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>بعدی</button>
                                     ) : (
                                         <button type="button" className="custom-button-primary" onClick={onClickSubmit}>ثبت نهایی و پرداخت</button>
-                                    )}
-                                    {progressStepIndex > 0 && (
-                                        <button type="button" className="custom-button-trans-text" onClick={onClickPreviousStep}>قبلی</button>
                                     )}
                                 </div>
                             </div>

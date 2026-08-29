@@ -138,9 +138,8 @@ export default function ArcOtpInput({ inputCount, value, setValue, onComplete, d
             onPaste={onPaste}
         >
             {output.map((digit, index) => (
-                <li className={`${(index+1 === enabledCount) && 'active'}`}>
+                <li className={`${(index+1 === enabledCount) && 'active'}`} key={index}>
                     <input
-                        key={index}
                         ref={(el) => { inputRefs.current[index] = el; }}
                         type="text"
                         inputMode="numeric"

@@ -8,7 +8,6 @@ use App\Rules\CartItemRule;
 use App\Rules\MobileRule;
 use App\Rules\NationalCodeRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 
 class RegisterStoreRequest extends FormRequest
@@ -54,7 +53,7 @@ class RegisterStoreRequest extends FormRequest
                     $validator->errors()->add('general', 'کاربری با این مشخصات قبلا ثبت نام کرده است');
             },
             function (Validator $validator) {
-                $response = (new OtpController($this->input('otp')))->check($this->input('mobile'));
+                $response = (new OtpController($this->input('mobile')))->check($this->input('otp'));
                 if(!empty($response))
                     $validator->errors()->add('general', $response);
             }

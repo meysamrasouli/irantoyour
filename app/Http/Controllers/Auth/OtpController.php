@@ -62,7 +62,7 @@ class OtpController extends Controller
         }
 
         //----------| time range
-        if($otp->updated_at <= date("Y-m-d H:i:s", strtotime("-2 minutes")))
+        if(Carbon::parse($otp->updated_at)->addMinutes(2)->isPast())
             return "زمان اعتبار کد به پایان رسید. یک کد جدید دریافت کنید.";
 
         //----------| valid

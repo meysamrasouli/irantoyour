@@ -17,37 +17,31 @@ export default function UserDetail({ form, formError, validateField }: UserDetai
     };
 
     return (
-        <div className="user-detail">
-            <div className="user-detail-title">
-                <h2>اطلاعات شخصی</h2>
-                <p>اطلاعات کاربری را به درستی وارد کنید.</p>
-            </div>
-            <ul className="form-container">
-                <li data-error={(formError['first_name']) ?? ''} data-label="نام">
-                    <input type="text"
-                           value={form.data.first_name}
-                           onChange={(e) => onChangeField('first_name', e.target.value)}
-                    />
-                </li>
-                <li data-error={(formError['last_name']) ?? ''} data-label="نام خانوادگی">
-                    <input type="text"
-                           value={form.data.last_name}
-                           onChange={(e) => onChangeField('last_name', e.target.value)}
-                    />
-                </li>
-                <li data-error={(formError['mobile']) ?? ''} data-label="شماره موبایل">
-                    <input type="text"
-                        value={form.data.mobile}
-                        onChange={(e) => onChangeField('mobile', e.target.value)}
-                    />
-                </li>
-                <li data-error={(formError['national_code']) ?? ''} data-label="کد ملی">
-                    <input type="text"
-                        value={form.data.national_code}
-                        onChange={(e) => onChangeField('national_code', e.target.value)}
-                    />
-                </li>
-            </ul>
-        </div>
+        <ul className="form-container">
+            <li data-error={(formError['first_name']) ?? ''} data-label="نام">
+                <input type="text"
+                       value={form.data.first_name}
+                       onChange={(e) => onChangeField('first_name', e.target.value)}
+                />
+            </li>
+            <li data-error={(formError['last_name']) ?? ''} data-label="نام خانوادگی">
+                <input type="text"
+                       value={form.data.last_name}
+                       onChange={(e) => onChangeField('last_name', e.target.value)}
+                />
+            </li>
+            <li data-error={(formError['mobile']) ?? ''} data-label="شماره موبایل">
+                <input type="text"
+                       value={form.data.mobile}
+                       onChange={(e) => onChangeField('mobile', e.target.value)}
+                />
+            </li>
+            <li data-error={(formError['national_code']) ?? ''} data-label="کد ملی">
+                <input type="text"
+                       value={form.data.national_code}
+                       onChange={(e) => onChangeField('national_code', e.target.value)}
+                />
+            </li>
+        </ul>
     );
 }
