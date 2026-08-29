@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
-import {useRef, useState, useEffect} from "react";
+import {useRef, useState} from "react";
 import * as React from "react";
 import ArcTariffMembershipPlan, {PlanInterface} from "@/components/ui/arc_tariff_membershipPlan";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
@@ -91,16 +91,15 @@ export default function Register(controllerProps: ControllerPropsInterface) {
 
         // skip the step 2 if otp is already valid
         if(nextIndex === 2){
-            setOtpMessage({ type: '', content: '' });
-
             // check if the mobile number has changed, if so, send a new OTP
             if(otpDetail.current.mobile !== form.data.mobile) {
+                setOtpMessage({ type: '', content: '' });
                 otpDetail.current = {mobile: form.data.mobile, isValid: false};// reset the otp detail to the new mobile number
 
                 void otpRef.current?.sendOtp()?.catch(() => {
                     setOtpMessage({type: 'error', content: 'خطا در ارسال کد تایید. لطفا دوباره تلاش کنید.'});
                 });
-            }else{
+            }else if(otpDetail.current.isValid){
                 nextIndex++; // skip to the next step if the OTP is already valid
             }
         }
@@ -224,7 +223,11 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                     </div>
 
                                                     <div className="button-container-center">
-                                                        <button type="button" className="custom-button-primary" onClick={()=>onClickNextStep()}>تایید و ادامه</button>
+                                                        <button type="button"
+                                                                className="custom-button-primary"
+                                                                onClick={()=>onClickNextStep()}
+                                                                disabled={!otpDetail.current.isValid}
+                                                        >تایید و ادامه</button>
                                                     </div>
                                                 </div>
                                             </div>
