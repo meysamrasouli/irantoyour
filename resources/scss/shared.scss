@@ -320,6 +320,9 @@ form{
 }
 //==============================| Custom Buttons
 [class*="custom-button"],[class*="custom-icon"]{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     border: none;
     border-radius: 5px;
@@ -338,12 +341,7 @@ form{
 }
 [class*="custom-button"]{
     height: 42px;
-    line-height: 40px;
     padding: 0 15px;
-    display: inline-block;
-}
-a[class*="custom-button"]{
-    line-height: 38px;
 }
 [class*="custom-icon"]{
     width: 40px;
@@ -1012,7 +1010,7 @@ a[class*="custom-button"]{
             transition: all 0.3s;
         }
         .plan-title{
-            padding: 20px 10px;
+            padding: 15px 10px;
             border-bottom: solid 1px $color-border-light;
             font-weight: bold;
             background-color: $color-gray-bg;
@@ -1188,7 +1186,43 @@ a[class*="custom-button"]{
     flex-direction: column;
     gap: 10px;
 
+    a{
+        padding: 5px;
+        cursor: pointer;
+    }
     .arc-countdown-timer{
         font-weight: bold;
+    }
+}
+//==============================| faq
+.arc-faq{
+
+    ul{
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        li{
+            border: solid 1px $color-border-light;
+            border-radius: $radius-lg;
+
+            .faq-question{
+                padding: 15px 20px;
+                display: grid;
+                grid-template-columns: 1fr 15px;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+                user-select: none;
+                font-weight: bold;
+            }
+            .faq-answer{
+                padding: 0 20px 20px;
+                color: $color-text-02;
+            }
+        }
     }
 }

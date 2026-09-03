@@ -14,7 +14,10 @@ export const config = {
 };
 
 export const logout = () => {
-    localStorage.clear();
+    // توکنی در مرورگر ذخیره نمی‌کنیم (session-based)؛ فقط پاکسازی احتمالی کلیدهای قدیمی
+    localStorage.removeItem('tokenUser');
+    localStorage.removeItem('tokenPersonnel');
+
     router.post('/logout');
 };
 

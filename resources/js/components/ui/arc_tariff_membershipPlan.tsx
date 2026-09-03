@@ -40,7 +40,7 @@ export default function ArcTariffMembershipPlan({ value, setValue, plans }: ArcM
                     </div>
                     <ul className="plan-description">
                         <li>{item.detail.description}</li>
-                        <li>شارژ <span className="price-toman">{FormatNumber(item.detail.bonusBalance)}</span> اعتبار</li>
+                        <li>شارژ <b className="price-toman">{FormatNumber(item.detail.bonusBalance)}</b> اعتبار</li>
                     </ul>
                     <button type="button" className="custom-button">انتخاب</button>
                 </li>

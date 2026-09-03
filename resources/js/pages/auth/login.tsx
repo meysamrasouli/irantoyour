@@ -1,121 +1,55 @@
 import * as React from "react";
 import { useRef, useState } from "react";
-import ArcOtpInput from "@/components/ui/arc_input_otp";
-import ArcCountdownTimer from "@/components/ui/arc_countDownTimer";
 import { validate } from "@/shared/utils/validationUtils";
 import { convertToEnglishDigits } from "@/shared/utils/convertUtils";
-import { axiosClient } from "@/shared/utils/axiosUtils";
-
-//==================================================| Types
-type MessageClass = '' | 'error' | 'success';
-interface MessageStateInterface {
-    class: MessageClass;
-    content: string;
-}
+import ArcOtp, {ArcOtpRefInterface, MessageInterface} from "@/components/ui/arc_otp";
+import { apiLoginUser, apiLoginUserSendOtp, handleLoginUserResult } from "@/shared/api/auth";
+import { config } from "@/shared/utils/generalUtils";
+import {Link} from "@inertiajs/react";
 
 export default function Login() {
     const [mobile, setMobile] = useState('');
-    const [otp, setOtp] = useState('');
     const [step, setStep] = useState<1 | 2>(1);
-    const [countdownTimer, setCountdownTimer] = useState(0);
-    const [message, setMessage] = useState<MessageStateInterface>({ class: '', content: '' });
-    const [sendOtpDisabled, setSendOtpDisabled] = useState(false);
-    const [loginDisabled, setLoginDisabled] = useState(true);
+    const otpRef = useRef<ArcOtpRefInterface>(null)
+    const [message, setMessage] = useState<MessageInterface>()
 
-    // FIX: state (setSendOtpDisabled/setLoginDisabled) آسنکرونه، پس به‌تنهایی نمی‌تونه جلوی
-    // فراخوانی هم‌زمان/سریع دوباره رو بگیره (مثلاً دو بار Enter خیلی سریع، یا OTP که دوبار کامل بشه).
-    // این ref ها به‌عنوان یک قفل واقعی و فوری (سنکرون) عمل می‌کنن.
-    const isSendingOtpRef = useRef(false);
     const isLoggingInRef = useRef(false);
 
     //==================================================| Events
-    const onClickSendOtp = async () => {
-        if (isSendingOtpRef.current) return;
-        isSendingOtpRef.current = true;
-
-        setMessage({ class: '', content: '' });
-
+    const onClickSendOtp = () => {
+        // clean mobile
         const cleanMobile = convertToEnglishDigits(mobile);
         setMobile(cleanMobile);
 
+        // validate mobile
         const error = validate(cleanMobile, ['notEmpty', 'mobile'], true);
         if (error) {
-            setMessage({ class: 'error', content: error });
-            isSendingOtpRef.current = false;
+            setMessage({ type: 'error', content: error });
             return;
         }
-
-        setSendOtpDisabled(true);
-
-        try {
-            const response = await axiosClient.post('/login/send_otp', { mobile: cleanMobile });
-
-            if (response.data === '') {
-                setMessage({ class: 'success', content: `کد امنیتی به شماره ${cleanMobile} ارسال شد` });
-                setCountdownTimer(120);
-            } else {
-                // بک‌اند وقتی هنوز زمان کافی از ارسال قبلی نگذشته، ثانیه‌های باقی‌مانده رو برمی‌گردونه
-                setMessage({ class: 'error', content: 'برای ارسال مجدد منتظر بمانید' });
-                setCountdownTimer(Number(response.data));
-            }
-
-            setLoginDisabled(false);
-            setStep(2);
-        } catch {
-            setSendOtpDisabled(false);
-            setMessage({ class: 'error', content: 'اطلاعات وارد شده اشتباه است' });
-        } finally {
-            isSendingOtpRef.current = false;
-        }
-    };
-
-    const onEndedCountdown = () => {
-        setCountdownTimer(0);
-        setSendOtpDisabled(false);
-    };
+        // on-mount arc_otp send otp message
+        setStep(2);
+    }
 
     const onClickEditMobile = () => {
-        setStep(1);
-        setOtp('');
-        setMessage({ class: '', content: '' });
-        setCountdownTimer(0);
-    };
+        setStep(1)
+        setMessage({ type: '', content: '' });
+    }
 
-    /**
-     * @param otpOverride - مقدار تازه‌ی OTP که مستقیم از ArcOtpInput.onComplete میاد (نه از state خونده بشه،
-     * چون setOtp هنوز commit نشده - همون درسی که قبلاً چندبار در این پروژه به‌کار بردیم)
-     */
-    const onClickLogin = async (otpOverride?: string) => {
-        if (isLoggingInRef.current) return;
+    const onSubmitOtp = async (otp: string) => {
+        if (isLoggingInRef.current) return;// lock function
         isLoggingInRef.current = true;
 
-        setMessage({ class: '', content: '' });
-
-        const cleanMobile = convertToEnglishDigits(mobile);
-        const mobileError = validate(cleanMobile, ['notEmpty', 'mobile'], true);
-        if (mobileError) {
-            setMessage({ class: 'error', content: mobileError });
-            isLoggingInRef.current = false;
-            return;
-        }
-
-        const cleanOtp = convertToEnglishDigits(otpOverride ?? otp);
-        const otpError = validate(cleanOtp, ['notEmpty', 'integer', { length_fix: 5 }], true);
-        if (otpError) {
-            setMessage({ class: 'error', content: otpError });
-            isLoggingInRef.current = false;
-            return;
-        }
-
-        setLoginDisabled(true);
+        setMessage({ type: '', content: '' })
 
         try {
-            const response = await axiosClient.post<{ token: string }>('/login', { mobile: cleanMobile, otp: cleanOtp });
-            localStorage.setItem('tokenUser', response.data.token); // sanctum bearer token
-            window.location.href = '/profile';
+            const result = await apiLoginUser(mobile, otp);
+            handleLoginUserResult(result);
         } catch (error: any) {
-            setMessage({ class: 'error', content: error?.response?.data?.message ?? 'ورود ناموفق بود' });
-            setLoginDisabled(false);
+            const errorData = error?.response?.data;
+            const errorMessage = errorData?.errors?.error?.[0] ?? errorData?.message ?? 'ورود ناموفق بود';
+            setMessage({ type: 'error', content: errorMessage });
+        } finally {
             isLoggingInRef.current = false;
         }
     };
@@ -125,11 +59,14 @@ export default function Login() {
             <div className="login-container">
                 <div className="login-wrapper">
                     <div className="login-header">
-                        <img src="/images/logo/logo.svg" alt="" />
+                        <img src="/images/logo/logo.png" alt="" />
 
-                        {message.content !== '' && (
-                            <div className={`login-message message-${message.class}`} role="alert" aria-live="polite">
-                                {message.content}
+                        <h1>ورود به <span className="accent-text">{config.APP_NAME_FA}</span></h1>
+
+                        {(message?.content) && (
+                            <div className={`notification-container ${message?.type === 'error' ? 'message-error' : 'message-info'}`}>
+                                <i className={`fa-regular ${message?.type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}`}></i>
+                                <p>{ message?.content }</p>
                             </div>
                         )}
                     </div>
@@ -142,60 +79,42 @@ export default function Login() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
                                     inputMode="numeric"
+                                    pattern="[0-9]*"
                                     maxLength={11}
                                     value={mobile}
                                     onChange={(e) => setMobile(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === 'Enter' && !sendOtpDisabled) onClickSendOtp(); }}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') onClickSendOtp(); }}
                                     placeholder="شماره موبایل"
                                 />
 
                                 <div className="button-container">
-                                    <button type="button" className="custom-button" onClick={onClickSendOtp} disabled={sendOtpDisabled}>
-                                        ادامه
-                                    </button>
+                                    <button type="button" className="custom-button-primary" onClick={onClickSendOtp}>ادامه</button>
                                 </div>
+
+                                <div>حساب کاربری ندارید؟ <Link href="/register" className="accent-text">ثبت‌نام کنید</Link></div>
                             </div>
                         )}
 
                         {/*--------------------| step 2 |--------------------*/}
                         {step === 2 && (
                             <div className="login-steps">
-                                <div className="otp-header">
-                                    <span>{mobile}</span>
-                                    <button type="button" className="link-button" onClick={onClickEditMobile}>ویرایش شماره</button>
-                                </div>
-
-                                <div className="otp-container">
-                                    <ArcOtpInput
-                                        inputCount={5}
-                                        value={otp}
-                                        setValue={setOtp}
-                                        onComplete={(value) => onClickLogin(value)}
-                                    />
-
-                                    <button type="button" onClick={onClickSendOtp} disabled={sendOtpDisabled} className="custom-button-trans-primary">
-                                        {countdownTimer > 0 ? (
-                                            <span>اعتبار کد یکبار مصرف تا: <ArcCountdownTimer until={countdownTimer} type="m:s" onEnded={onEndedCountdown} /></span>
-                                        ) : (
-                                            <span><i className="fa-regular fa-rotate-left" /> ارسال مجدد</span>
-                                        )}
-                                    </button>
-                                </div>
-
-                                <div className="button-container">
-                                    <button type="button" className="custom-button" onClick={() => onClickLogin()} disabled={loginDisabled}>
-                                        ورود به سایت
-                                    </button>
-                                </div>
+                                <p>کد تایید به شماره {mobile} ارسال شد.</p>
+                                <ArcOtp ref={otpRef}
+                                        mobile={mobile}
+                                        sendOtp={() => apiLoginUserSendOtp(mobile)}
+                                        setMessage={setMessage}
+                                        onComplete={onSubmitOtp}
+                                        onBack={onClickEditMobile}
+                                        showSubmit
+                                />
                             </div>
                         )}
                     </div>
                 </div>
             </div>
 
-            <div className="login-image" />
+            <img className="login-image" src="/images/pages/auth/login.png" alt=""/>
         </main>
     );
 }

@@ -40,6 +40,59 @@
         text-align: center;
     }
 }
+.feature-card{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+
+    li{
+        padding: 30px 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        border-radius: $radius-md;
+        box-shadow: $box-shadow-01;
+        background-color: $color-white;
+
+        i{
+            padding: 20px;
+            border-radius: $radius-md;
+            font-size: $font-2xl;
+        }
+        h3{
+            font-size: $font-md;
+        }
+        p{
+            font-size: $font-sm;
+            color: $color-text-02;
+            text-align: center;
+        }
+    }
+}
+.notification-container{
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-radius: $radius-md;
+    font-size: $font-sm;
+
+    &.message-info{
+        border: solid 1px $color-blue-dark;
+        background-color: $color-blue-bg;
+        color: $color-blue-dark;
+    }
+    &.message-error{
+        border: solid 1px $color-red;
+        background-color: $color-red-bg;
+        color: $color-red;
+    }
+    i{
+        font-size: $font-lg;
+    }
+}
+//==================================================| Advanced React Component |==================================================\\
 //==================================================| Layout |==================================================\\
 body #app{
     & > header{
@@ -159,7 +212,7 @@ main.index{
                 position: absolute;
                 z-index: 0;
             }
-            div{
+            & > div{
                 max-width: 420px;
                 margin-right: 100px;
                 color: #fff;
@@ -174,40 +227,27 @@ main.index{
                     margin-bottom: 10px;
                     font-size: $font-2xl;
                 }
-            }
-        }
-    }
-    section.benefit{
-        ul.benefit-list{
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 40px;
+                .button-container-right{
+                    margin-top: 20px;
 
-            li{
-                padding: 30px 40px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-                border-radius: $radius-md;
-                box-shadow: $box-shadow-01;
-
-                i{
-                    padding: 20px;
-                    border-radius: $radius-md;
-                    font-size: $font-2xl;
-                }
-                div{
-                    font-weight: bold;
-                }
-                p{
-                    font-size: $font-sm;
-                    color: $color-text-02;
-                    text-align: center;
+                    a{
+                        height: 50px;
+                        padding: 10px 30px;
+                        font-weight: bold;
+                        border-radius: $radius-xl;
+                    }
+                    .custom-button-primary{
+                        color: $color-secondary;
+                    }
+                    .custom-button-trans-text{
+                        color: $color-white;
+                        border: solid 1px $color-border-lightest;
+                    }
                 }
             }
         }
     }
+    section.benefit{}
     section.chain-supply{
         background-color: $color-gray-bg;
 
@@ -273,12 +313,15 @@ main.index{
                 font-size: $font-3xl;
                 margin-bottom: 10px;
             }
-            button{
-                height: max-content;
+            .button-container-center{
                 margin-top: 30px;
-                padding: 10px 30px;
-                font-size: $font-lg;
-                border-radius: $radius-lg;
+
+                a{
+                    height: 50px;
+                    padding: 10px 30px;
+                    font-size: $font-lg;
+                    border-radius: $radius-xl;
+                }
             }
         }
     }
@@ -289,16 +332,17 @@ main.index{
 //==================================================| Register
 main.register{
     section.user-register{
+        padding-bottom: 100px;
+
         .step-form{
             padding: 0 230px;
             display: flex;
             flex-direction: column;
             gap: 50px;
 
-
             .split-section{
                 display: grid;
-                grid-template: "detail guid" 400px / 1fr 300px;
+                grid-template: "detail guid" 430px / 1fr 300px;
                 border-radius: $radius-lg;
                 box-shadow: $box-shadow-01;
 
@@ -310,28 +354,6 @@ main.register{
                     justify-content: space-between;
                     text-align: center;
 
-                    .notification-info-container, .notification-error-container{
-                        padding: 10px 20px;
-                        display: flex;
-                        align-items: center;
-                        gap: 15px;
-                        border-radius: $radius-md;
-                        font-size: $font-sm;
-
-                        i{
-                            font-size: $font-lg;
-                        }
-                    }
-                    .notification-info-container{
-                        border: solid 1px $color-blue-dark;
-                        background-color: $color-blue-bg;
-                        color: $color-blue-dark;
-                    }
-                    .notification-error-container{
-                        border: solid 1px $color-red;
-                        background-color: $color-red-bg;
-                        color: $color-red;
-                    }
                     .section-detail-info{
                         text-align: center;
 
@@ -373,10 +395,101 @@ main.register{
             }
 
             .otp-wrapper{
+                margin: 5px 0;
                 display: flex;
                 justify-content: center;
             }
+            table.user-detail{
+                tr:not(:last-child){
+                    border-bottom: solid 1px $color-border-light;
+                }
+                td{
+                    padding: 10px 0;
+                    text-align: right;
+                    color: $color-text-02;
+                }
+                th{
+                    text-align: left;
+                }
+            }
 
+        }
+    }
+    section.membership-detail{
+        background-color: $color-gray-bg;
+    }
+}
+//==================================================| login
+main.login{
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-content: center;
+
+    .login-image{
+        height: 100vh;
+        display: block;
+        object-fit: cover;
+        object-position: left;
+    }
+    .login-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .login-wrapper{
+            max-width: 400px;
+            width: 100%;
+            padding: 50px;
+            border-radius: $radius-lg;
+
+            .login-header{
+                margin-bottom: 10px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                text-align: center;
+
+                h1{
+                    font-size: $font-2xl;
+                    letter-spacing: -5px;
+                    span{
+                        padding-right: 5px;
+                    }
+                }
+                img{ height: 70px; }
+            }
+            .login-body{
+                text-align: center;
+
+                .login-steps{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+
+                    input[type="text"]{
+                        width: 100%;
+                        line-height: 30px;
+                        text-align: center;
+                        border: none;
+                        border-bottom: 1px solid $color-border;
+                        transition: all .1s;
+                    }
+                    .button-container{
+                        padding: 0;
+
+                        button{
+                            width: 100%;
+                            height: 48px;
+                            border-radius: $radius-lg;
+                        }
+                    }
+                }
+            }
         }
     }
 }

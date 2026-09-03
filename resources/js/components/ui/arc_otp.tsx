@@ -2,15 +2,15 @@ import * as React from "react";
 import {useRef, useState, useEffect, forwardRef, useImperativeHandle} from "react";
 import ArcOtpInput from "@/components/ui/arc_input_otp";
 import ArcCountdownTimer from "@/components/ui/arc_countDownTimer";
-import {convertToEnglishDigits} from "@/shared/utils/convertUtils";
-import {validate} from "@/shared/utils/validationUtils";
-import {axiosClient} from "@/shared/utils/axiosUtils";
+import type { SendOtpResultInterface } from "@/shared/api/auth";
 
 interface ArcOtpPropsInterface {
-    page: "register" | "loginUser" | "loginPersonnel",
     mobile: string,
+    sendOtp: () => Promise<SendOtpResultInterface>,// ارسال کد (پیاده‌سازی در صفحه)
     setMessage: (value: MessageInterface) => void,
-    onComplete?: () => void;// when all the inputs are filled, it is called
+    onComplete: (otp: string) => void,// when all the inputs are filled, it is called
+    onBack?: () => void,// رفتن به مرحله قبلی (ویرایش شماره در صفحه لاگین / بازگشت در ثبت‌نام)
+    showSubmit?: boolean,// login pages: show the "ورود به سایت" button
 }
 export interface MessageInterface {
     type: "" | "info" | "error";
@@ -19,52 +19,40 @@ export interface MessageInterface {
 
 export interface ArcOtpRefInterface {
     sendOtp: () => Promise<void>;
-    getMobileValue: () => string;
     getOtpValue: () => string;
 }
 
+/**
+ * todo: everytime this component created a request send to server - although only one SMS send to user
+ * but still there is no limit to user's request. i should keep the remaining time with the related mobile number
+ * in somewhere like localstorage
+ * */
 
 const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
-    function ArcOtp({ page, mobile, setMessage, onComplete }, ref) {
+    function ArcOtp({ mobile, sendOtp, setMessage, onComplete, onBack, showSubmit = false }, ref) {
         const [otp, setOtp] = useState<string>('')
         const [countdownTimer, setCountdownTimer] = useState(0);
 
         const [sendOtpDisabled, setSendOtpDisabled] = useState(false);
-        const [loginDisabled, setLoginDisabled] = useState(true);
         const isSendingOtpRef = useRef(false);
-        const isLoggingInRef = useRef(false);
 
-        const sendOtp = async () => {
+        const handleSendOtp = async () => {
             if (isSendingOtpRef.current) return;// lock the function
             isSendingOtpRef.current = true;
 
             setMessage({ type: '', content: '' });// clear message
-
-            //------------------------------| validate mobile
-            const cleanMobile = convertToEnglishDigits(mobile);
-            const error = validate(cleanMobile, ['notEmpty', 'mobile'], true);
-            if (error) {
-                setMessage({ type: 'error', content: error });
-                isSendingOtpRef.current = false;// unlock function
-                return;
-            }
             setSendOtpDisabled(true);
 
-            //------------------------------| send otp
+            //------------------------------| send otp (پیاده‌سازی در صفحه از طریق auth.ts)
             try {
-                const loginUrl = {
-                    register: '/register-auth/send-otp',
-                    loginUser: '/login/send-otp',
-                    loginPersonnel: '/dashboard/login/send-otp'
-                }
-                const response = await axiosClient.post(loginUrl[page], { mobile: cleanMobile })
+                const result = await sendOtp();
 
-                if (response.data === '') {
-                    //setMessage({type: 'info', content: `کد امنیتی به شماره ${cleanMobile} ارسال شد`});
+                if (result.remainingSeconds === 0) {
+                    //setMessage({type: 'info', content: `کد امنیتی به شماره ${mobile} ارسال شد`});
                     setCountdownTimer(120);
                 } else {
                     setMessage({type: 'info', content: 'برای ارسال مجدد منتظر بمانید'});
-                    setCountdownTimer(Number(response.data));
+                    setCountdownTimer(result.remainingSeconds);
                 }
             } catch {
                 setSendOtpDisabled(false);
@@ -75,7 +63,7 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
         };
         // send the otp as soon as mobile changed
         useEffect(() => {
-            sendOtp().catch((reason) => {});
+            void handleSendOtp();
         }, [mobile]);
 
         const onEndedCountdown = () => {
@@ -83,94 +71,29 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
             setSendOtpDisabled(false);
         };
 
-        const checkOtp = async (otpOverride?: string) => {
-            if (isLoggingInRef.current) return;// lock the function
-            isLoggingInRef.current = true;
-
-            setMessage({ type: '', content: '' });
-
-            //------------------------------| validate mobile
-            const cleanMobile = convertToEnglishDigits(mobile);
-            const error = validate(cleanMobile, ['notEmpty', 'mobile'], true);
-            if (error) {
-                setMessage({ type: 'error', content: error });
-                isLoggingInRef.current = false;// unlock function
-                return;
-            }
-            //------------------------------| validate otp
-            const cleanOtp = convertToEnglishDigits(otpOverride ?? otp);
-            const otpError = validate(cleanOtp, ['notEmpty', 'integer', { length_fix: 5 }], true);
-            if (otpError) {
-                setMessage({ type: 'error', content: otpError });
-                isLoggingInRef.current = false;
-                return;
-            }
-
-            //------------------------------| check otp
-            switch (page){
-                case 'register':
-                    try {
-                        const response = await axiosClient.post<{ error: string }>('/register-auth', { mobile: cleanMobile, otp: cleanOtp });
-                        if(response.data.error === ''){
-                            onComplete?.()// callback function
-                        }else{
-                            setMessage({ type: 'error', content: response.data.error});
-                        }
-                    } catch (error: any) {
-                        setMessage({ type: 'error', content: error?.response?.data?.message ?? 'ورود ناموفق بود' });
-                    }finally {
-                        isLoggingInRef.current = false;
-                    }
-                    break;
-                case 'loginUser':
-                case 'loginPersonnel':
-                    setLoginDisabled(true);
-
-                    try {
-                        let intendedUrl: string|null = null
-                        if(page === 'loginUser'){
-                            const response = await axiosClient.post<{ token: string, intended:string|null }>('/login', { mobile: cleanMobile, otp: cleanOtp });
-                            localStorage.setItem('tokenUser', response.data.token) // sanctum bearer token user
-                            intendedUrl = response.data.intended
-                        }
-                        if(page === 'loginPersonnel'){
-                            const response = await axiosClient.post<{ token: string, intended:string|null }>('/dashboard/login', { mobile: cleanMobile, otp: cleanOtp });
-                            localStorage.setItem('tokenPersonnel', response.data.token) // sanctum bearer token personnel
-                            intendedUrl = response.data.intended
-                        }
-
-                        //------------------------------| redirect after login
-                        if(intendedUrl){
-                            window.location.href = intendedUrl
-                        }else{
-                            location.reload()
-                        }
-                    } catch (error: any) {
-                        setMessage({ type: 'error', content: error?.response?.data?.message ?? 'ورود ناموفق بود' });
-                        setLoginDisabled(false);
-                    }finally {
-                        isLoggingInRef.current = false;
-                    }
-                    break;
-            }
+        const submitOtp = () => {
+            if (otp.length !== 5) return;
+            onComplete(otp);
         };
 
         useImperativeHandle(ref, () => ({
-            sendOtp: sendOtp,
-            getMobileValue: () => mobile,
+            sendOtp: handleSendOtp,
             getOtpValue: () => otp,
         }));
 
         return (
             <div className="arc-otp">
+
+                <a className="hyper-link" onClick={(e) => { e.preventDefault(); onBack?.(); }}>ویرایش شماره همراه</a>
+
                 <ArcOtpInput
                     inputCount={5}
                     value={otp}
                     setValue={setOtp}
-                    onComplete={(value) => checkOtp(value)}
+                    onComplete={onComplete}
                 />
 
-                <button type="button" onClick={sendOtp} disabled={sendOtpDisabled} className="custom-button-trans-text">
+                <button type="button" onClick={handleSendOtp} disabled={sendOtpDisabled} className="custom-button-trans-text">
                     {countdownTimer > 0 ? (
                         <span>ارسال مجدد کد تا <ArcCountdownTimer until={countdownTimer} type="m:s" onEnded={onEndedCountdown} /> دیگر</span>
                     ) : (
@@ -178,9 +101,9 @@ const ArcOtp = forwardRef<ArcOtpRefInterface, ArcOtpPropsInterface>(
                     )}
                 </button>
 
-                {page !== 'register' && (
+                {showSubmit && (
                     <div className="button-container">
-                        <button type="button" className="custom-button" onClick={() => checkOtp()} disabled={loginDisabled}>ورود به سایت</button>
+                        <button type="button" className="custom-button-primary" onClick={submitOtp} disabled={otp.length !== 5}>ورود به سایت</button>
                     </div>
                 )}
             </div>

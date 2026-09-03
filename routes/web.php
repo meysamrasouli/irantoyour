@@ -17,8 +17,8 @@ Route::prefix('register-auth')->name('auth.register.')->group(function () {
     Route::post('/', [Auth\RegisterController::class, 'checkOtp'])->name('check-otp');
 });
 //========================================| USER
-Route::prefix('login')->middleware(['guest'])->name('auth.user.')->group(function () {
-    Route::post('send-otp', [Auth\UserController::class, 'sendOTP'])->name('send-otp');
+Route::prefix('login')->middleware(['guest'])->group(function () {
+    Route::post('send-otp', [Auth\UserController::class, 'sendOTP'])->name('login.send-otp');
     Route::post('/', [Auth\UserController::class, 'login'])->name('login');
 
     Route::get('/', [Auth\UserController::class, 'index'])->name('login.index');
@@ -27,6 +27,12 @@ Route::prefix('login')->middleware(['guest'])->name('auth.user.')->group(functio
 //========================================| LOGOUT
 Route::post('logout', [Auth\UserController::class, 'logout'])->name('logout');
 
+
+//==================================================| BANK |==================================================\\
+Route::prefix('bank-callback')->name('bank-callback.')->group(function () {
+    Route::any('register/{register}', [Bank\RegisterController::class, 'bankCallback'])->name('bank-callback-register');
+    Route::any('invoice/{invoice}', [Bank\InvoiceController::class, 'bankCallback'])->name('bank-callback-invoice');
+});
 
 //==================================================| WEBSITE |==================================================\\
 Route::get('/', [Website\WebsiteController::class, 'index']);
@@ -38,8 +44,8 @@ Route::get('register', [Website\RegisterController::class, 'index'])->name('regi
 Route::post('register', [Website\RegisterController::class, 'store'])->name('register.store');
 
 
-//==================================================| BANK |==================================================\\
-Route::prefix('bank-callback')->name('bank-callback.')->group(function () {
-    Route::any('register/{register}', [Bank\RegisterController::class, 'bankCallback'])->name('bank-callback-register');
-    Route::any('invoice/{invoice}', [Bank\InvoiceController::class, 'bankCallback'])->name('bank-callback-invoice');
+//==================================================| PROFILE |==================================================\\
+Route::prefix('profile')->middleware(['auth'])->name('profile.')->group(function () {
+    //------------------------------| index
+    Route::get('/', [Profile\ProfileController::class, 'index'])->name('index');
 });

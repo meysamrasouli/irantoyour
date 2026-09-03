@@ -26,7 +26,7 @@ class User extends Authenticatable
 
     protected function casts(): array{
         return [
-            'status'         => 'boolean',
+            'status' => 'boolean',
         ];
     }
 

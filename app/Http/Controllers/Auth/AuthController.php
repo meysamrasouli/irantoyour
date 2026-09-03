@@ -31,9 +31,14 @@ class AuthController extends Controller
      * @return void
      */
     protected function intendedUrl(Request $request): void{
+        // فقط وقتی کاربر از یک صفحه محافظت‌شده به login هدایت شده باشد،
+        // مقدار url.intended توسط middleware auth در session ذخیره می‌شود.
+        if(!$request->session()->has('url.intended'))
+            return;
+
         $intendedUrl = Redirect::intended()->getTargetUrl();// it must be store immediately
 
-        if(($intendedUrl && ($intendedUrl !== Config('app.url'))))
+        if($intendedUrl && ($intendedUrl !== Config('app.url')))
             $request->session()->put('intendedUrl', $intendedUrl);
     }
 
@@ -43,10 +48,10 @@ class AuthController extends Controller
      * @return Response
      */
     function logout(Request $request){
-        Auth::user()->tokens()->delete();// sanctum - api
         Auth::logout();
 
         $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return Inertia::location('/');
     }

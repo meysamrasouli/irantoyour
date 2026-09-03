@@ -22,7 +22,7 @@ class UserController extends AuthController
         // check for intended url
         $this->intendedUrl($request);
 
-        return inertia::render('Auth/login');
+        return inertia::render('auth/login');
     }
 
     /**
@@ -44,24 +44,15 @@ class UserController extends AuthController
         if(empty($user))
             throw ValidationException::withMessages(['error' => 'کاربر نامعتبر']);
 
-        //------------------------------| login
-        $token = $this->loginUser($user);
+        //------------------------------| session based login (First-party SPA)
+        Auth::guard('web')->login($user);
 
         //------------------------------| check intended url
         $intendedUrl = $request->session()->pull('intendedUrl');
-        $intendedUrl = ($intendedUrl) || null;
+        $intendedUrl = $intendedUrl ?: '/profile';
 
         return response()->json([
             'intended' => $intendedUrl,
-            'token' => $token,
         ]);
-    }
-
-    public function loginUser(User $user): string{
-        //------------------------------| login
-        Auth::guard('web')->login($user);
-
-        //------------------------------| sanctum
-        return $user->createToken('api-user', ['*'], now()->addDay())->plainTextToken;
     }
 }

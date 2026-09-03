@@ -1,7 +1,7 @@
-import { Head } from '@inertiajs/react'
-import Layout from "@/pages/website/_layout";
-import {useRef, useState} from "react";
 import * as React from "react";
+import {useRef, useState} from "react";
+import {Head} from '@inertiajs/react'
+import Layout from "@/pages/website/_layout";
 import ArcTariffMembershipPlan, {PlanInterface} from "@/components/ui/arc_tariff_membershipPlan";
 import ArcProgressStep from "@/components/ui/arc_progressStep";
 import {useFormHandler} from "@/shared/hooks/useFormSubmit";
@@ -9,9 +9,12 @@ import UserDetail from "@/components/website/register/userDetail";
 import { PageDetailInterface } from "@/shared/types/pageDetailInterface";
 import { CartInterface } from "@/shared/types/cartInterface";
 import ArcOtp, {ArcOtpRefInterface, MessageInterface} from "@/components/ui/arc_otp";
+import {apiRegisterSendOtp, apiVerifyRegisterOtp} from "@/shared/api/auth";
+import ArcFaq from "@/components/ui/arc_faq";
 
 interface ControllerPropsInterface {
     list_plan: PlanInterface[],
+    list_faq: [string, string][],
     pageDetail: PageDetailInterface,
 }
 export interface FormDataInterface {
@@ -23,12 +26,10 @@ export interface FormDataInterface {
     otp: string,
 }
 
-type RegisterFormHandler = ReturnType<typeof useFormHandler<FormDataInterface>>;
-
 export function validateRegisterField(
     field: keyof FormDataInterface,
     value: unknown,
-    validateField: RegisterFormHandler['validateField']
+    validateField: ReturnType<typeof useFormHandler<FormDataInterface>>['validateField']
 ): string {
     switch (field) {
         case 'mobile':
@@ -68,13 +69,19 @@ export default function Register(controllerProps: ControllerPropsInterface) {
 
     //==============================| Event
     const validateStep = (stepIndex: number): boolean => {
-        const fieldsInEveryStep: Record<number, (keyof FormDataInterface)[]> = {
-            0: ['cart_item'],
-            1: ['mobile', 'national_code', 'first_name', 'last_name'],
-            2: ['otp']
-        };
-        const fields = fieldsInEveryStep[stepIndex];
-        if (!fields) return true;
+        let fields: (keyof FormDataInterface)[] = []
+        switch (stepIndex){
+            case 0:
+                fields = ['cart_item']
+                break
+            case 1:
+                fields = ['mobile', 'national_code', 'first_name', 'last_name']
+                break
+            case 2:
+                return otpDetail.current.isValid;
+            default:
+                return true
+        }
 
         let isValid = true;
         fields.forEach((field) => {
@@ -95,10 +102,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
             if(otpDetail.current.mobile !== form.data.mobile) {
                 setOtpMessage({ type: '', content: '' });
                 otpDetail.current = {mobile: form.data.mobile, isValid: false};// reset the otp detail to the new mobile number
-
-                void otpRef.current?.sendOtp()?.catch(() => {
-                    setOtpMessage({type: 'error', content: 'خطا در ارسال کد تایید. لطفا دوباره تلاش کنید.'});
-                });
+                // ArcOtp در mount کد جدید را به صورت خودکار ارسال می‌کند
             }else if(otpDetail.current.isValid){
                 nextIndex++; // skip to the next step if the OTP is already valid
             }
@@ -106,10 +110,21 @@ export default function Register(controllerProps: ControllerPropsInterface) {
 
         setProgressStepIndex(nextIndex)
     }
-    const onOtpComplete = () => {
-        otpDetail.current.isValid = true;
-        form.setData('otp', otpRef.current?.getOtpValue() || '');
-        onClickNextStep()
+    const onOtpComplete = async (otp: string) => {
+        try {
+            const result = await apiVerifyRegisterOtp(form.data.mobile, otp);
+
+            if(result.error){
+                setOtpMessage({ type: 'error', content: result.error });
+                return;
+            }
+
+            otpDetail.current = {mobile: form.data.mobile, isValid: true};
+            form.setData('otp', otp);
+            onClickNextStep()
+        } catch (error: any) {
+            setOtpMessage({ type: 'error', content: error?.response?.data?.message ?? 'خطا در بررسی کد تایید' });
+        }
     }
 
     const onClickPreviousStep = () => {
@@ -204,7 +219,7 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                         <i className="fa-solid fa-shield-check"></i>
 
                                                         {(otpMessage?.content) ? (
-                                                            <div className={`${otpMessage?.type === 'error' ? 'notification-error-container' : 'notification-info-container'}`}>
+                                                            <div className={`notification-container ${otpMessage?.type === 'error' ? 'message-error' : 'message-info'}`}>
                                                                 <i className={`fa-regular ${otpMessage?.type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}`}></i>
                                                                 <p>{ otpMessage?.content }</p>
                                                             </div>
@@ -214,11 +229,12 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                     </div>
 
                                                     <div className="otp-wrapper">
-                                                        <ArcOtp page={'register'}
-                                                                ref={otpRef}
+                                                        <ArcOtp ref={otpRef}
                                                                 mobile={form.data.mobile}
+                                                                sendOtp={() => apiRegisterSendOtp(form.data.mobile)}
                                                                 setMessage={setOtpMessage}
                                                                 onComplete={onOtpComplete}
+                                                                onBack={onClickPreviousStep}
                                                         />
                                                     </div>
 
@@ -244,32 +260,29 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                                 </div>
                                                 <div className="detail-section">
                                                     {formError['general'] && (
-                                                        <div className="notification-error-container">
+                                                        <div className="notification-container message-error">
                                                             <i className="fa-regular fa-exclamation-triangle"></i>
                                                             <p>{formError['general']}</p>
                                                         </div>
                                                     )}
 
-                                                    <table>
+                                                    <table className="user-detail">
                                                         <tbody>
                                                             <tr>
-                                                                <th>شماره موبایل</th><td>{ form.data.mobile }</td>
+                                                                <td>شماره موبایل</td><th>{ form.data.mobile }</th>
                                                             </tr>
                                                             <tr>
-                                                                <th>نام</th><td>{ form.data.first_name }</td>
+                                                                <td>نام</td><th>{ form.data.first_name }</th>
                                                             </tr>
                                                             <tr>
-                                                                <th>نام خانوادگی</th><td>{ form.data.last_name }</td>
+                                                                <td>نام خانوادگی</td><th>{ form.data.last_name }</th>
                                                             </tr>
                                                             <tr>
-                                                                <th>کدملی</th><td>{ form.data.national_code }</td>
+                                                                <td>کدملی</td><th>{ form.data.national_code }</th>
                                                             </tr>
                                                             <tr>
-                                                                <th>پلن انتخابی</th>
-                                                                <td>{selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th></th>
+                                                                <td>پلن انتخابی</td>
+                                                                <th>{selectedPlan ? `اشتراک ${selectedPlan.detail.duration_fa} ` : 'پلنی انتخاب نشده است'}</th>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -283,6 +296,47 @@ export default function Register(controllerProps: ControllerPropsInterface) {
                                     )}
                                 </ul>
                             </div>
+                        </div>
+                    </section>
+                    <section className="section-block membership-detail">
+                        <div className="middle">
+                            <div className="section-detail">
+                                <h2>امکانات <span className="accent-text">پلن های اشتراک</span></h2>
+                                <div className="section-description">یافتن شرکای تجاری، رصد قیمت‌ها در مناطق مختلف و مسیریابی بهینه لجستیک، همه در یک پلتفرم جامع.</div>
+                            </div>
+
+                            <ul className="feature-card">
+                                <li>
+                                    <i className="fa-solid fa-mobile label-primary"></i>
+                                    <h3>احراز هویت</h3>
+                                    <p>همه اعضا قبل از عضویت، احراز هویت می‌شوند تا معامله‌ای امن داشته باشید.</p>
+                                </li>
+                                <li>
+                                    <i className="fa-solid fa-location-dot label-primary"></i>
+                                    <h3>نمایش روی نقشه</h3>
+                                    <p>پرداخت از طریق درگاه رسمی بانکی انجام می‌شود و اشتراک بلافاصله فعال است.</p>
+                                </li>
+                                <li>
+                                    <i className="fa-solid fa-shield-check label-primary"></i>
+                                    <h3>پرداخت امن</h3>
+                                    <p>آگهی شما با موقعیت دقیق روی نقشه برای خریداران سرتاسر ایران نمایش داده می‌شود.</p>
+                                </li>
+                                <li>
+                                    <i className="fa-solid fa-headphones label-primary"></i>
+                                    <h3>پشتیبانی اختصاصی</h3>
+                                    <p>تیم پشتیبانی همواره پاسخگوی نیازهای شماست.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section className="section-block faq">
+                        <div className="middle">
+                            <div className="section-detail">
+                                <h2><span className="accent-text">سوالات</span> متداول</h2>
+                                <div className="section-description">اگر سوال شما یکی از گزینه های زیر نبود با تیم پشتیبانی ما تماس بگیرید</div>
+                            </div>
+
+                            <ArcFaq list_faq={controllerProps.list_faq} />
                         </div>
                     </section>
                 </main>

@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react'
+import {Head, Link} from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
 import { PageDetailInterface } from "@/shared/types/pageDetailInterface";
 
@@ -18,7 +18,12 @@ export default function Home() {
                             <div>
                                 <h1>ایران طیور</h1>
                                 <p>بازار تخصصی و هوشمند صنعت طیور ایران</p>
-                                <p>اولین پلتفرم تخصصی مبتنی بر نقشه برای پایش قیمت، تامین نهاده و مدیریت لجستیک زنده</p>
+                                <p>بستری امن برای ارتباط مستقیم تولیدکنندگان، تامین‌کنندگان و خریداران صنعت طیور. با عضویت در سامانه به پروفایل اختصاصی، ثبت آگهی و نقشه موقعیت‌یابی دسترسی پیدا ‌کنید.</p>
+
+                                <div className="button-container-right">
+                                    <Link href="/about" className="custom-button-trans-text">درباره ما</Link>
+                                    <Link href="/register" className="custom-button-primary">عضویت و ثبت آگهی</Link>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -29,25 +34,25 @@ export default function Home() {
                                 <div className="section-description">یافتن شرکای تجاری، رصد قیمت‌ها در مناطق مختلف و مسیریابی بهینه لجستیک، همه در یک پلتفرم جامع.</div>
                             </div>
 
-                            <ul className="benefit-list">
+                            <ul className="feature-card">
                                 <li>
                                     <i className="fa-regular fa-crosshairs label-green"></i>
-                                    <div>مکان‌یابی دقیق آگهی‌ها</div>
+                                    <h3>مکان‌یابی دقیق آگهی‌ها</h3>
                                     <p>مشاهده لحظه‌ای موقعیت جغرافیایی فروشندگان و خریداران فعال در سطح کشور</p>
                                 </li>
                                 <li>
                                     <i className="fa-regular fa-chart-line-up label-orange"></i>
-                                    <div>رصد منطقه‌ای قیمت‌ها</div>
+                                    <h3>رصد منطقه‌ای قیمت‌ها</h3>
                                     <p>تحلیل و مقایسه شاخص‌های قیمتی محصولات طیور به تفکیک استان‌ها</p>
                                 </li>
                                 <li>
                                     <i className="fa-regular fa-truck label-secondary"></i>
-                                    <div>مدیریت هوشمند لجستیک</div>
+                                    <h3>مدیریت هوشمند لجستیک</h3>
                                     <p>اتصال مستقیم به ناوگان حمل و نقل تخصصی طیور و مسیریابی امن بار</p>
                                 </li>
                                 <li>
                                     <i className="fa-regular fa-chart-mixed-up-circle-dollar label-red"></i>
-                                    <div>تحلیل و پیش بینی بازار</div>
+                                    <h3>تحلیل و پیش بینی بازار</h3>
                                     <p>دسترسی به گزارش های نحلیلی و پیش بینی نوسان قیمت در بازار طیور</p>
                                 </li>
                             </ul>
@@ -86,7 +91,9 @@ export default function Home() {
                         <div className="middle">
                             <h2>آماده پیوستن به بزرگترین شبکه تجارت طیور هستید؟</h2>
                             <p>همین حالا ثبت نام کنید و به جمع هزاران فعال صنعت طیور بپیوندید و کسب‌وکار خود را متحول کنید.</p>
-                            <button type="button" className="custom-button-secondary"><i className="fa-regular fa-user-check icon-right"></i><span>ثبت نام فوری</span></button>
+                            <div className="button-container-center">
+                                <Link href="/register" className="custom-button-secondary"><i className="fa-regular fa-user-check icon-right"></i><span>ثبت نام فوری</span></Link>
+                            </div>
                         </div>
                     </section>
                 </main>

@@ -198,9 +198,6 @@ export default function ArcDataTable({ namespace, condition = null, features = n
         try {
             const response = await axiosClient.post(url);
 
-            if (namespace.includes('user')) localStorage.setItem('tokenUser', response.data.token);
-            if (namespace.includes('personnel')) localStorage.setItem('tokenPersonnel', response.data.token);
-
             setLoginModal({ open: true, name: response.data.name, mobile: response.data.mobile });
         } catch (error) {
             console.error(error);
