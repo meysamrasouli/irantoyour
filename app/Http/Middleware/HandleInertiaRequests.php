@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -43,11 +44,37 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
-            'auth' => [
-                'user' => $request->user(),
+        $global_variables = [
+            'auth' => null,
+            'flush' => [
+                'notification' => fn () => $request->session()->get('notification'),
             ],
         ];
+
+        //==================================================| Website - Profile
+        if(Auth::guard('web')->check()){
+            $global_variables['auth']['user'] = [
+                'mobile'=> Auth::guard('web')->user()->mobile,
+                'first_name'=> Auth::guard('web')->user()->first_name,
+                'last_name'=> Auth::guard('web')->user()->last_name,
+                'balance'=> Auth::guard('web')->user()->balance,
+            ];
+
+            //------------------------------| Website
+            //------------------------------| Profile
+            //if(str_contains($request->path(), 'profile')){}
+        }
+
+        //==================================================| All Dashboards
+        if((Auth::guard('personnel')->check())){
+            $global_variables['auth']['personnel'] = [
+                'mobile'=> Auth::guard('personnel')->user()->mobile,
+                'first_name'=> Auth::guard('personnel')->user()->first_name,
+                'last_name'=> Auth::guard('personnel')->user()->last_name,
+                'roles'=> Auth::guard('personnel')->user()->getRoleNames(),
+            ];
+        }
+
+        return array_merge(parent::share($request), $global_variables);
     }
 }

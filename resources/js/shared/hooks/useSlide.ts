@@ -24,17 +24,12 @@ const EASING_MAP: Record<NonNullable<SlideOptions['easing']>, string> = {
     'ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
-/**
- * در حین انیمیشن، علاوه بر height، padding و border عمودی هم انیمیت می‌شوند
- * تا انتهای انیمیشن (height = 0) واقعاً ارتفاع کلی به صفر برسد و جهش آخر رخ ندهد.
- */
-const ANIMATED_PROPS = [
+const TRANSITION_PROPS = [
     'height',
     'padding-top',
     'padding-bottom',
     'border-top-width',
     'border-bottom-width',
-    'opacity',
 ] as const;
 
 interface SlideMetrics {
@@ -46,7 +41,6 @@ interface SlideMetrics {
 }
 
 export default function useSlide(): UseSlideReturn {
-    // تایمرهای فعال انیمیشن — برای پاک‌سازی در هنگام unmount
     const timersRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
     useEffect(() => {
@@ -58,40 +52,16 @@ export default function useSlide(): UseSlideReturn {
         };
     }, []);
 
-    /**
-     * اندازه‌ی کامل و طبیعی المنت را اندازه‌گیری می‌کند (بدون استایل‌های inline
-     * که ممکن است از انیمیشن قبلی باقی مانده باشند) — با یک clone مخفی.
-     */
-    const getSlideMetrics = useCallback((element: HTMLElement): SlideMetrics => {
-        const clone = element.cloneNode(true) as HTMLElement;
+    const readMetrics = useCallback((element: HTMLElement): SlideMetrics => {
+        const computedStyle = window.getComputedStyle(element);
 
-        // استایل‌های inline باقی‌مانده از انیمیشن قبلی را حذف کن تا اندازه از CSS خالص گرفته شود
-        ANIMATED_PROPS.forEach((prop) => clone.style.removeProperty(prop));
-
-        clone.style.position = 'absolute';
-        clone.style.visibility = 'hidden';
-        clone.style.display = 'block';
-        clone.style.height = 'auto';
-        clone.style.maxHeight = 'none';
-        clone.style.overflow = 'visible';
-        clone.style.pointerEvents = 'none';
-        clone.style.boxSizing = 'border-box';
-
-        const parent = element.parentElement ?? document.body;
-        parent.appendChild(clone);
-
-        const computedStyle = window.getComputedStyle(clone);
-        const metrics: SlideMetrics = {
-            height: clone.getBoundingClientRect().height,
+        return {
+            height: element.getBoundingClientRect().height,
             paddingTop: parseFloat(computedStyle.paddingTop) || 0,
             paddingBottom: parseFloat(computedStyle.paddingBottom) || 0,
             borderTop: parseFloat(computedStyle.borderTopWidth) || 0,
             borderBottom: parseFloat(computedStyle.borderBottomWidth) || 0,
         };
-
-        parent.removeChild(clone);
-
-        return metrics;
     }, []);
 
     const animate = useCallback((
@@ -111,10 +81,31 @@ export default function useSlide(): UseSlideReturn {
             return;
         }
 
-        element.dataset.animating = 'true';
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            if (isDown) {
+                element.style.display = 'block';
+                element.style.removeProperty('height');
+                element.style.removeProperty('padding-top');
+                element.style.removeProperty('padding-bottom');
+                element.style.removeProperty('border-top-width');
+                element.style.removeProperty('border-bottom-width');
+                element.style.opacity = '';
+            } else {
+                element.style.display = 'none';
+                element.style.height = '0px';
+                element.style.opacity = '0';
+            }
 
-        const metrics = getSlideMetrics(element);
-        const easingFn = EASING_MAP[easing];
+            callback?.();
+            return;
+        }
+
+        element.dataset.animating = 'true';
+        element.style.transition = 'none';
+        element.style.height = 'auto';
+        if (isDown) element.style.display = 'block';
+
+        const metrics = readMetrics(element);
 
         const setCollapsed = () => {
             element.style.height = '0px';
@@ -134,30 +125,26 @@ export default function useSlide(): UseSlideReturn {
             element.style.opacity = '1';
         };
 
+        //--------------------------------------------------
         // استایل پایه برای انیمیشن
+        //--------------------------------------------------
         element.style.overflow = 'hidden';
         element.style.boxSizing = 'border-box';
         element.style.willChange = 'height, padding, opacity';
-        element.style.transition = 'none';
 
-        // فاز 1: state شروع را بدون transition commit کن
+        // فاز 1: state شروع را بدون transition ثابت کن
         if (isDown) {
-            element.style.display = 'block';
             setCollapsed();
         } else {
             setExpanded();
         }
 
-        void element.offsetHeight; // force reflow — state شروع commit شود
+        void element.offsetHeight;// force reflow — state شروع commit شود
 
         // فاز 2: transition را فعال و state پایانی را اعمال کن تا انیمیشن اجرا شود
         element.style.transition = [
-            `height ${duration}ms ${easingFn}`,
-            `padding-top ${duration}ms ${easingFn}`,
-            `padding-bottom ${duration}ms ${easingFn}`,
-            `border-top-width ${duration}ms ${easingFn}`,
-            `border-bottom-width ${duration}ms ${easingFn}`,
-            `opacity ${Math.round(duration * 0.6)}ms ${easingFn}`,
+            ...TRANSITION_PROPS.map((prop) => `${prop} ${duration}ms ${EASING_MAP[easing]}`),
+            `opacity ${Math.round(duration * 0.6)}ms ${EASING_MAP[easing]}`,
         ].join(', ');
 
         if (isDown) {
@@ -173,6 +160,7 @@ export default function useSlide(): UseSlideReturn {
             element.style.boxSizing = '';
 
             if (finalState === 'open') {
+                // باز شدن تمام شد → به layout طبیعی برگرد
                 element.style.removeProperty('height');
                 element.style.removeProperty('padding-top');
                 element.style.removeProperty('padding-bottom');
@@ -180,6 +168,7 @@ export default function useSlide(): UseSlideReturn {
                 element.style.removeProperty('border-bottom-width');
                 element.style.opacity = '';
             } else {
+                // بسته شدن تمام شد → حالت جمع‌شده
                 element.style.display = 'none';
                 element.style.height = '0px';
                 element.style.opacity = '0';
@@ -198,7 +187,7 @@ export default function useSlide(): UseSlideReturn {
 
         const onTransitionEnd = (e: TransitionEvent) => {
             if (e.target !== element) return;
-            // height آخرین مقداری است که به پایان می‌رسد (بیشترین مدتtransition)
+            // height بیشترین مدت انیمیشن را دارد و آخرین به پایان می‌رسد
             if (e.propertyName === 'height') {
                 cleanup(isDown ? 'open' : 'closed');
             }
@@ -212,7 +201,7 @@ export default function useSlide(): UseSlideReturn {
         }, duration + 120);
 
         timersRef.current.add(timeout);
-    }, [getSlideMetrics]);
+    }, [readMetrics]);
 
     const slideDown = useCallback((element: HTMLElement | null, options: SlideOptions = {}) => {
         if (!element) return;

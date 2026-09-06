@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react'
 import Layout from "@/pages/website/_layout";
 
-export default function About() {
+export default function Terms() {
     return (
         <>
             <Head title="قوانین و مقررات" />

@@ -129,7 +129,93 @@ body #app{
                     gap: 10px;
                 }
                 .user-menu{
-                    display: none;
+                    position: relative;
+
+                    .user-menu-button{
+                        padding: 10px;
+                        font-size: $font-2xl;
+                        color: $color-text-01;
+                        cursor: pointer;
+                        transition: color 0.2s ease;
+
+                        &:hover{
+                            color: $color-primary;
+                        }
+                    }
+                    .user-toggle-menu{
+                        width: 240px;
+                        padding: 10px;
+                        position: absolute;
+                        top: calc(100% + 15px);
+                        left: 0;
+                        z-index: 100;
+                        background-color: $color-white;
+                        border-radius: $radius-md;
+                        box-shadow: $box-shadow-01;
+                        opacity: 0;
+                        visibility: hidden;
+                        transform: translateY(-5px);
+                        transition: all 0.25s ease;
+
+                        &.active{
+                            opacity: 1;
+                            visibility: visible;
+                            transform: translateY(0);
+                        }
+                        .user-info{
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 5px;
+                            padding: 15px 10px;
+                            margin-bottom: 5px;
+                            border-bottom: solid 1px $color-border-lightest;
+                            border-radius: $radius-sm;
+                            transition: background-color 0.2s ease;
+
+                            &:hover{
+                                background-color: $color-gray-bg;
+                            }
+                            i{
+                                font-size: $font-4xl;
+                                color: $color-primary;
+                            }
+                            .user-name{
+                                font-weight: bold;
+                            }
+                            .user-mobile{
+                                font-size: $font-sm;
+                                color: $color-text-02;
+                            }
+                        }
+                        ul.profile-link{
+                            display: flex;
+                            flex-direction: column;
+
+                            li{
+                                border-radius: $radius-sm;
+
+                                a{
+                                    padding: 12px 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                    transition: background-color 0.2s ease;
+                                    cursor: pointer;
+
+                                    &:hover{
+                                        background-color: $color-gray-bg;
+                                        color: $color-primary;
+                                    }
+
+                                    i{
+                                        width: 22px;
+                                        text-align: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

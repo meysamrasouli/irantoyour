@@ -8,9 +8,9 @@ export const config = {
     APP_NAME_FA: import.meta.env.VITE_APP_NAME_FA,
     APP_COMPANY_NAME_FA: import.meta.env.VITE_APP_COMPANY_NAME_FA,
     APP_PRODUCT_SKU: import.meta.env.VITE_APP_PRODUCT_SKU,
-    APP_TELEPHONE: import.meta.env.VITE_APP_TELEPHONE,
-    APP_EMAIL: import.meta.env.VITE_APP_EMAIL,
-    APP_ADDRESS: import.meta.env.VITE_APP_ADDRESS,
+    APP_TELEPHONE: import.meta.env.VITE_COMPANY_TELEPHONE,
+    APP_EMAIL: import.meta.env.VITE_COMPANY_EMAIL,
+    APP_ADDRESS: import.meta.env.VITE_COMPANY_ADDRESS,
 };
 
 export const logout = () => {

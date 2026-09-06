@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\User;
-
 return [
 
     /*
@@ -42,6 +40,21 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // Meysam:
+        'personnel' => [
+            'driver' => 'session',
+            'provider' => 'personnel',
+        ],
+        // Meysam: sanctum
+        'api-user' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+        // Meysam: sanctum
+        'api-personnel' => [
+            'driver' => 'sanctum',
+            'provider' => 'personnel',
+        ],
     ],
 
     /*
@@ -64,13 +77,19 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', User::class),
+            'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+        // Meysam
+        'personnel' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Personnel::class,
+        ],
     ],
 
     /*
