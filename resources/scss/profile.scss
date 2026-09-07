@@ -1,0 +1,244 @@
+@use 'shared' as *;
+
+//==================================================| General Class |==================================================\\
+.middle{
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+//==================================================| Mixin |==================================================\\
+@mixin block-container{
+    border-radius: $radius-md;
+    background-color: $color-white;
+    box-shadow: $box-shadow-01;
+}
+
+//==================================================| Layout |==================================================\\
+body {
+    height: 100vh;
+    background-color: $color-gray-bg;
+
+    #app {
+        max-width: 1400px;
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+        padding-left: 10px;
+        padding-right: 10px;
+        display: grid;
+        grid-template:
+        "aside header" 60px
+        "aside main" 1fr / 250px 1fr;
+        gap: 10px;
+        position: relative;
+        z-index: 5;
+
+        & > header {
+            grid-area: header;
+            padding: 0 20px 0 10px;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            @include block-container;
+
+            & > div{
+                display: flex;
+                gap: 10px;
+            }
+            .hamburger-button{ display: none; }
+            .navbar-user{
+                & > a{
+                    display: flex;
+                    align-items: center;
+                }
+                & > aside{
+                    width: 270px;
+                    height: calc(100vh - 80px);
+                    padding: 10px;
+                    position: absolute;
+                    top: 70px;
+                    left: 10px;
+                    opacity: 0;
+                    pointer-events: none;
+                    transform: translateX(-12px);
+                    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+                    @include block-container;
+
+                    @media (prefers-reduced-motion: reduce){
+                        transition: opacity 0.25s ease-out;
+                        transform: none;
+                    }
+                    &.active{
+                        opacity: 1;
+                        pointer-events: auto;
+                        transform: translateY(0);
+                    }
+                    .quick-access{
+                        margin: 10px 0 20px;
+                        display: flex;
+                        gap: 5px;
+
+                        & > a{
+                            width: 100%;
+
+                            span{
+                                font-size: $font-md;
+                            }
+                        }
+                    }
+                    nav{
+                        display: flex;
+                        flex-direction: column;
+                        gap: 30px;
+
+                        ul{
+                            li{
+                                padding: 0 10px;
+
+                                &:last-child{
+                                    a{ border: none; }
+                                }
+                                a{
+                                    padding: 10px 5px;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    border-bottom: solid 1px $color-border-light;
+                                    cursor: pointer;
+                                    font-size: $font-md;
+
+                                    &:hover{
+                                        color: $color-primary-dark;
+                                    }
+                                    i{
+                                        margin-left: 10px;
+                                        font-size: $font-lg;
+                                    }
+                                }
+                                ul{
+                                    background-color: $color-gray-bg;
+                                    border-radius: $radius-md;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        & > aside{
+            grid-area: aside;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-radius: 10px 0 0 10px;
+            @include block-container;
+            background-color: $color-secondary;
+            color: $color-white;
+
+            .user-detail{
+                display: grid;
+                grid-template:
+                    "icon username" 20px
+                    "icon rule" 20px / 50px 1fr;
+                align-items: center;
+                gap: 7px 10px;
+
+                i{
+                    grid-area: icon;
+                    font-size: $font-5xl;
+                }
+                .user-name{ grid-area: username; }
+                .user-rule{
+                    grid-area: rule;
+
+                    span{
+                        font-size: $font-sm;
+                        color: $color-text-02;
+                    }
+                }
+            }
+            .account-detail{
+                padding: 15px 10px;
+                display: grid;
+                border-radius: $radius-md;
+                background-color: $color-primary;
+                span{
+                    font-size: 10px;
+                }
+            }
+            nav{
+                display: flex;
+                flex-direction: column;
+                gap: 40px;
+                overflow: auto;
+
+                ul{
+                    & > li{
+                        a, button{
+                            width: 100%;
+                            padding: 10px 20px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border: none;
+                            background-color: transparent;
+                            cursor: pointer;
+
+                            &:hover{
+                                color: $color-primary;
+                            }
+                            &.active{
+                                border-right: solid 3px $color-primary-dark;
+                                color: $color-primary;
+                                background-color: $color-bg-3;
+                                box-shadow: 0 1px 0 rgba(#000, 0.25), 0 1px 0 rgba(#fff, 0.1) inset;
+                            }
+                            i{
+                                font-size: $font-sm;
+                            }
+                            span{
+                                display: flex;
+                                align-items: center;
+
+                                i{
+                                    margin-left: 15px;
+                                    font-size: 14px;
+                                }
+                            }
+                        }
+
+                        ul{
+                            background-color: $color-secondary-dark;
+                            border-radius: $radius-md;
+                            box-shadow: 0 6px 2px -5px rgba($color-black, 0.2) inset, 0 -6px 2px -5px rgba($color-white,0.2) inset;
+
+                            li {
+                                a, button{
+                                    padding-right: 35px;
+
+                                    &.active{
+                                        box-shadow: none!important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        & > main{
+            grid-area: main;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: auto;
+            @include block-container;
+
+            h1{
+                color: $color-text-02;
+            }
+        }
+    }
+}
