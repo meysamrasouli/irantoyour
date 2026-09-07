@@ -283,7 +283,24 @@ img {
         }
     }
 }
-//==============================| label{
+//==============================| slide toggle
+.slide-toggle-container{
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 350ms cubic-bezier(0, 0, 0.2, 1);
+
+    @media (prefers-reduced-motion: reduce){
+        transition: none;
+    }
+    &.is-open{
+        grid-template-rows: 1fr;
+    }
+    .slide-toggle-wrapper{
+        overflow: hidden;
+        min-height: 0;
+    }
+}
+//==============================| label
 .label-primary{
     color: $color-primary;
     background-color: $color-primary-bg;
@@ -1195,52 +1212,31 @@ form{
     }
 }
 //==============================| faq
-.arc-faq{
+ul.arc-faq{
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 
-    ul{
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+    & > li{
+        border: solid 1px $color-border-light;
+        border-radius: $radius-lg;
 
-        li{
-            border: solid 1px $color-border-light;
-            border-radius: $radius-lg;
-
-            .faq-question{
-                padding: 15px 20px;
-                display: grid;
-                grid-template-columns: 1fr 15px;
-                align-items: center;
-                gap: 10px;
-                cursor: pointer;
-                user-select: none;
-                font-weight: bold;
-            }
-            .faq-answer{
-                display: grid;
-                grid-template-rows: 0fr;
-                transition: grid-template-rows 350ms cubic-bezier(0, 0, 0.2, 1);
-
-                @media (prefers-reduced-motion: reduce){
-                    transition: none;
-                }
-
-                &.is-open{
-                    grid-template-rows: 1fr;
-                }
-
-                .faq-answer-body{
-                    overflow: hidden;
-                    min-height: 0;
-                    color: $color-text-02;
-
-                    p{
-                        padding: 0 20px 20px;
-                    }
-                }
+        .faq-question{
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: 1fr 15px;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+        }
+        .faq-answer{
+            p{
+                padding: 0 20px 20px;
             }
         }
     }

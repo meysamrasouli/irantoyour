@@ -38,8 +38,6 @@ export default function Layout({ children }: Props) {
     );
 
 
-    console.log(usePage())
-
     return (
         <>
             <ArcOverlayLoading />
@@ -99,8 +97,6 @@ export default function Layout({ children }: Props) {
             </aside>
 
             {children}
-
-            <footer></footer>
         </>
     )
 }
