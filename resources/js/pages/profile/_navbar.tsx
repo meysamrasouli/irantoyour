@@ -24,12 +24,12 @@ export default function Navbar() {
         <nav className="navbar-profile">
             <ul>
                 <li>
-                    <Link href="/profile" className={component.includes('Profile/index') ? 'active' : ''}>
+                    <Link href="/profile" className={component.includes('profile/index') ? 'active' : ''}>
                         <span><i className="fa-regular fa-chart-line"></i>داشبورد</span>
                     </Link>
                 </li>
                 <li>
-                    <a onClick={() => toggleMenu('search')} className={component.includes('Profile/Search/') ? 'active' : ''}>
+                    <a onClick={() => toggleMenu('search')} className={component.includes('profile/search') ? 'active' : ''}>
                         <span><i className="fa-regular fa-magnifying-glass"></i>جستجوی آگهی ها</span>
                         <i className={`fa-solid ${isMenuOpen('search') ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
                     </a>

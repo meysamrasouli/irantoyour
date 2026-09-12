@@ -1,77 +1,93 @@
 //==================================================| Variables |==================================================\\
 //==============================| Color
 // Primary
+$color-primary-bg: #FFEEDE;
 $color-primary-lightest: #FFDDB8;
 $color-primary-light: #FFB95F;
 $color-primary: #F59E0B;
 $color-primary-dark: #EE9800;
-$color-primary-darkest: #A76A00;
-$color-primary-bg: #FFEEDE;
+$color-primary-darkest: #8F5A00;
 
 // Secondary
+$color-secondary-bg: #ECF1FF;
 $color-secondary-lightest: #3C475A;
 $color-secondary-light: #263143;
 $color-secondary: #1E293B;
 $color-secondary-dark: #111C2D;
-$color-secondary-darkest: #000000;
-$color-secondary-bg: #ECF1FF;
+$color-secondary-darkest: #060B14;
 
 // Greed
-$color-green-bg: #d1fadf;
-$color-green-lightest: #6ce9a6;
-$color-green-light: #32d583;
-$color-green: #12b76a;
+$color-green-bg: #E7F8F2;
+$color-green-lightest: #6CE9A6;
+$color-green-light: #32D583;
+$color-green: #12B76A;
 $color-green-dark: #039855;
-$color-green-darkest: #027a48;
-$color-green-bg: #e7f8f2;
+$color-green-darkest: #027A48;
 
 // Red
-$color-red-bg: #fee4e2;
-$color-red-lightest: #fda29b;
-$color-red-light: #f97066;
-$color-red: #f04438;
-$color-red-dark: #d92d20;
-$color-red-darkest: #b42318;
+$color-red-bg: #FEE4E2;
+$color-red-lightest: #FDA29B;
+$color-red-light: #F97066;
+$color-red: #F04438;
+$color-red-dark: #D92D20;
+$color-red-darkest: #B42318;
 
 // Orange
-$color-orange-lightest: #fdb022;
-$color-orange-light: #fdb022;
-$color-orange: #f79009;
-$color-orange-dark: #dc6803;
-$color-orange-darkest: #b54708;
-$color-orange-bg: #fef5e6;
+$color-orange-bg: #FFF1E7;
+$color-orange-lightest: #FDBA74;
+$color-orange-light: #FB923C;
+$color-orange: #EA580C;
+$color-orange-dark: #C2410C;
+$color-orange-darkest: #9A3412;
 
 // Blue
+$color-blue-bg: #E4F3FF;
 $color-blue-lightest: #C5E7FF;
 $color-blue-light: #7FD0FF;
 $color-blue: #19BDFF;
 $color-blue-dark: #009BD3;
 $color-blue-darkest: #004C6A;
-$color-blue-bg: #E4F3FF;
+
+// Purple
+$color-purple-bg: #F4F0FF;
+$color-purple-lightest: #D6BBFB;
+$color-purple-light: #B692F6;
+$color-purple: #7F56D9;
+$color-purple-dark: #6941C6;
+$color-purple-darkest: #53389E;
 
 // Gray
-$color-gray-bg: #f8fafc;
+$color-gray-bg: #F8FAFC;
+$color-gray-lightest: #F1F5F9;
+$color-gray-light: #E2E8F0;
+$color-gray: #CBD5E1;
+$color-gray-dark: #94A3B8;
+$color-gray-darkest: #64748B;
 
 // Black and White
-$color-white: #ffffff;
+$color-white: #FFFFFF;
 $color-black: #000000;
 
 // Color Text
-$color-text-01: #1a1a1a;
-$color-text-02: #6b7280;
-$color-text-03: #bcbfc5;
+$color-text-01: #0F172A;
+$color-text-02: #64748B;
+$color-text-03: #94A3B8;
+
+$color-text-inverse-01: #FFFFFF;
+$color-text-inverse-02: #CBD5E1;
+$color-text-inverse-03: #94A3B8;
 
 // Color border
-$color-border-lightest: #f0f0f0;
-$color-border-light: #e0e0e2;
-$color-border: #c0c2c5;
-$color-border-dark: #a1a3a8;
-$color-border-darkest: #81858b;
+$color-border-lightest: #F1F5F9;
+$color-border-light: #E2E8F0;
+$color-border: #CBD5E1;
+$color-border-dark: #94A3B8;
+$color-border-darkest: #64748B;
 
 // Background level
 $color-bg-0: $color-white;
-$color-bg-1: $color-white;
-$color-bg-2: $color-white;
+$color-bg-1: $color-gray-bg;
+$color-bg-2: $color-gray-lightest;
 $color-bg-3: $color-white;
 
 //==============================| Table
@@ -81,11 +97,21 @@ $table-row-dark: rgba($color:#eee, $alpha:0.8);
 $table-row-light: rgba($color:#eee, $alpha:0.4);
 $table-row-hover: rgba($color:#aaa, $alpha:0.3);
 
+$table-header: $color-primary;
+$table-header-hover: $color-primary-dark;
+//$table-header-text: $color-on-primary;
+$table-row-odd: $color-gray-lightest;
+$table-row-even: $color-white;
+$table-row-hover: $color-primary-bg;
+$table-row-selected: $color-primary-lightest;
+
 //==============================| Border Radius
+$radius-xs: 5px;
 $radius-sm: 6px;
 $radius-md: 8px;
 $radius-lg: 12px;
 $radius-xl: 16px;
+$radius-full: 999px;
 
 //==============================| Font Size
 $font-xs:  11px;
@@ -98,10 +124,31 @@ $font-3xl: 28px;
 $font-4xl: 32px;
 $font-5xl: 48px;
 
+$line-height-tight: 1.4;
+$line-height-base: 1.75;
+$line-height-loose: 2;
+
+$font-weight-normal: 400;
+$font-weight-bold: 700;
+
+//==============================| Spacing
+$space-xs: 5px;
+$space-sm: 10px;
+$space-md: 15px;
+$space-lg: 20px;
+$space-xl: 30px;
+$space-2xl: 40px;
+$space-3xl: 50px;
+$space-section: 100px;
+
 //==============================| Shadow
 $box-shadow-01: 0 0 10px rgba(#000, 0.1);
 
-$box-shadow-primary-01: 0 0 10px 5px rgba($color-primary, 0.2);
+$box-shadow-lvl1: 0 1px 2px rgba(#0F172A, 0.06), 0 1px 3px rgba(#0F172A, 0.10);
+$box-shadow-lvl2: 0 4px 6px -1px rgba(#0F172A, 0.08), 0 2px 4px -2px rgba(#0F172A, 0.10);
+$box-shadow-lvl3: 0 12px 24px -6px rgba(#0F172A, 0.16), 0 4px 8px -4px rgba(#0F172A, 0.10);
+$box-shadow-inset: inset 0 1px 2px rgba(#0F172A, 0.08);
+
 
 //==================================================| Fonts |==================================================\\
 @font-face{
@@ -304,6 +351,15 @@ img {
     }
 }
 //==============================| label
+[class*="label-"]{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: $radius-md;
+    font-size: $font-2xl;
+}
 .label-primary{
     color: $color-primary;
     background-color: $color-primary-bg;
@@ -323,6 +379,14 @@ img {
 .label-orange{
     color: $color-orange;
     background-color: $color-orange-bg;
+}
+.label-blue{
+    color: $color-blue;
+    background-color: $color-blue-bg;
+}
+.label-purple{
+    color: $color-purple;
+    background-color: $color-purple-bg;
 }
 //==============================| Form
 form{
@@ -1163,7 +1227,7 @@ form{
 
         .progress-bar-title{
             font-weight: normal;
-            color: $color-text-02;
+            color: $color-text-01;
         }
     }
     .progress-bar-track{

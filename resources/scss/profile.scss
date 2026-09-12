@@ -2,6 +2,7 @@
 
 //==================================================| General Class |==================================================\\
 .middle{
+    max-width: 1200px;
     margin: 0 auto;
     padding-left: 20px;
     padding-right: 20px;
@@ -16,108 +17,113 @@
 //==================================================| Layout |==================================================\\
 body {
     height: 100vh;
+    overflow: hidden;
     background-color: $color-gray-bg;
 
     #app {
-        max-width: 1400px;
         width: 100%;
         height: 100%;
-        margin: 0 auto;
-        padding-left: 10px;
-        padding-right: 10px;
         display: grid;
         grid-template:
-        "aside header" 60px
-        "aside main" 1fr / 250px 1fr;
-        gap: 10px;
+        "aside header header header" 60px
+        "aside . main ." minmax(0, 1fr) / 250px auto 1fr auto;
+        justify-items: center;
+        gap: 10px 0;
         position: relative;
         z-index: 5;
 
         & > header {
             grid-area: header;
-            padding: 0 20px 0 10px;
-            display: flex;
-            flex-direction: row-reverse;
-            align-items: center;
+            width: 100%;
             @include block-container;
+            border-radius: 0;
 
-            & > div{
+            .middle{
+                height: 100%;
+                padding: 0 20px 0 10px;
                 display: flex;
-                gap: 10px;
-            }
-            .hamburger-button{ display: none; }
-            .navbar-user{
-                & > a{
+                flex-direction: row-reverse;
+                align-items: center;
+
+                & > div{
                     display: flex;
-                    align-items: center;
+                    gap: 10px;
                 }
-                & > aside{
-                    width: 270px;
-                    height: calc(100vh - 80px);
-                    padding: 10px;
-                    position: absolute;
-                    top: 70px;
-                    left: 10px;
-                    opacity: 0;
-                    pointer-events: none;
-                    transform: translateX(-12px);
-                    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
-                    @include block-container;
-
-                    @media (prefers-reduced-motion: reduce){
-                        transition: opacity 0.25s ease-out;
-                        transform: none;
-                    }
-                    &.active{
-                        opacity: 1;
-                        pointer-events: auto;
-                        transform: translateY(0);
-                    }
-                    .quick-access{
-                        margin: 10px 0 20px;
+                .hamburger-button{ display: none; }
+                .navbar-user{
+                    & > a{
                         display: flex;
-                        gap: 5px;
+                        align-items: center;
+                    }
+                    & > aside{
+                        width: 270px;
+                        height: calc(100vh - 80px);
+                        padding: 10px;
+                        position: absolute;
+                        top: 70px;
+                        left: 10px;
+                        z-index: 5;
+                        opacity: 0;
+                        pointer-events: none;
+                        transform: translateX(-12px);
+                        transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+                        @include block-container;
 
-                        & > a{
-                            width: 100%;
+                        @media (prefers-reduced-motion: reduce){
+                            transition: opacity 0.25s ease-out;
+                            transform: none;
+                        }
+                        &.active{
+                            opacity: 1;
+                            pointer-events: auto;
+                            transform: translateY(0);
+                        }
+                        .quick-access{
+                            margin: 10px 0 20px;
+                            display: flex;
+                            gap: 5px;
 
-                            span{
-                                font-size: $font-md;
+                            & > a{
+                                width: 100%;
+
+                                span{
+                                    font-size: $font-md;
+                                }
                             }
                         }
-                    }
-                    nav{
-                        display: flex;
-                        flex-direction: column;
-                        gap: 30px;
+                        nav{
+                            display: flex;
+                            flex-direction: column;
+                            gap: 30px;
 
-                        ul{
-                            li{
-                                padding: 0 10px;
+                            ul{
+                                li{
+                                    padding: 0 10px;
 
-                                &:last-child{
-                                    a{ border: none; }
-                                }
-                                a{
-                                    padding: 10px 5px;
-                                    display: flex;
-                                    justify-content: space-between;
-                                    align-items: center;
-                                    border-bottom: solid 1px $color-border-light;
-                                    cursor: pointer;
-                                    font-size: $font-md;
-
-                                    &:hover{
-                                        color: $color-primary-dark;
+                                    &:last-child{
+                                        a{ border: none; }
                                     }
-                                    i{
-                                        margin-left: 10px;
-                                        font-size: $font-lg;
+                                    a{
+                                        padding: 10px 5px;
+                                        display: flex;
+                                        justify-content: space-between;
+                                        align-items: center;
+                                        border-bottom: solid 1px $color-border-light;
+                                        cursor: pointer;
+                                        font-size: $font-md;
+
+                                        &:hover{
+                                            color: $color-primary-dark;
+                                        }
+                                        i{
+                                            margin-left: 10px;
+                                            font-size: $font-lg;
+                                        }
                                     }
-                                }
-                                ul{
-                                    background-color: $color-gray-bg;
-                                    border-radius: $radius-md;
+                                    ul{
+                                        background-color: $color-gray-bg;
+                                        border-radius: $radius-md;
+                                    }
                                 }
                             }
                         }
@@ -127,47 +133,71 @@ body {
         }
         & > aside{
             grid-area: aside;
-            padding: 20px;
+            width: 100%;
+            padding: 10px 20px 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            border-radius: 10px 0 0 10px;
             @include block-container;
+            border-radius: 0;
             background-color: $color-secondary;
             color: $color-white;
 
+            .logo{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 5px;
+
+                img{
+                    width: 35px;
+                    height: auto;
+                }
+                span{
+                    font-size: $font-2xl;
+                    color: $color-primary;
+                }
+            }
             .user-detail{
-                display: grid;
-                grid-template:
+                padding: 10px 0;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+
+                .user-info{
+                    display: grid;
+                    grid-template:
                     "icon username" 20px
                     "icon rule" 20px / 50px 1fr;
-                align-items: center;
-                gap: 7px 10px;
+                    align-items: center;
+                    gap: 7px 10px;
 
-                i{
-                    grid-area: icon;
-                    font-size: $font-5xl;
+                    i{
+                        grid-area: icon;
+                        font-size: $font-5xl;
+                    }
+                    .user-name{ grid-area: username; }
+                    .user-rule{
+                        grid-area: rule;
+
+                        span{
+                            font-size: $font-sm;
+                            color: $color-text-02;
+                        }
+                    }
                 }
-                .user-name{ grid-area: username; }
-                .user-rule{
-                    grid-area: rule;
-
+                .account-detail{
+                    padding: 15px 10px;
+                    display: grid;
+                    border-radius: $radius-md;
+                    background-color: $color-primary;
                     span{
-                        font-size: $font-sm;
-                        color: $color-text-02;
+                        font-size: 10px;
                     }
                 }
             }
-            .account-detail{
-                padding: 15px 10px;
-                display: grid;
-                border-radius: $radius-md;
-                background-color: $color-primary;
-                span{
-                    font-size: 10px;
-                }
-            }
             nav{
+                min-height: 0;
                 display: flex;
                 flex-direction: column;
                 gap: 40px;
@@ -182,6 +212,7 @@ body {
                             justify-content: space-between;
                             align-items: center;
                             border: none;
+                            border-radius: $radius-md;
                             background-color: transparent;
                             cursor: pointer;
 
@@ -189,10 +220,8 @@ body {
                                 color: $color-primary;
                             }
                             &.active{
-                                border-right: solid 3px $color-primary-dark;
-                                color: $color-primary;
-                                background-color: $color-bg-3;
-                                box-shadow: 0 1px 0 rgba(#000, 0.25), 0 1px 0 rgba(#fff, 0.1) inset;
+                                color: $color-white;
+                                background-color: $color-primary;
                             }
                             i{
                                 font-size: $font-sm;
@@ -229,6 +258,9 @@ body {
         }
         & > main{
             grid-area: main;
+            min-height: 0;
+            max-width: 1200px;
+            width: 100%;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -238,6 +270,46 @@ body {
 
             h1{
                 color: $color-text-02;
+            }
+        }
+    }
+}
+//==================================================| Pages |==================================================\\
+//==================================================| Index
+main.index{
+    section.widget{
+        .widget-container{
+            padding: 10px;
+
+            .swiper-slide{
+                height: 100px;
+                padding: 20px;
+                display: grid;
+                grid-template:
+                    "icon value" 20px
+                    "icon title" 35px / 60px 1fr;
+                align-content: center;
+
+                gap: 0 20px;
+                align-items: center;
+                @include block-container;
+
+                i{
+                    grid-area: icon;
+                    width: 50px;
+                    height: 50px;
+                    font-size: $font-md;
+                }
+                div{
+                    grid-area: value;
+                    font-size: $font-sm;
+                    color: $color-text-02;
+                }
+                span {
+                    grid-area: title;
+                    font-size: $font-lg;
+
+                }
             }
         }
     }

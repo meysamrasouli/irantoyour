@@ -48,4 +48,10 @@ Route::post('register', [Website\RegisterController::class, 'store'])->name('reg
 Route::prefix('profile')->middleware(['auth'])->name('profile.')->group(function () {
     //------------------------------| index
     Route::get('/', [Profile\ProfileController::class, 'index'])->name('index');
+
+    //------------------------------| user
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('/', [Profile\UserController::class, 'edit'])->name('edit');
+        Route::put('/', [Profile\UserController::class, 'update'])->name('update');
+    });
 });

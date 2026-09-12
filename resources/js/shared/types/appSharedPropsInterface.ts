@@ -1,7 +1,4 @@
-/**
- * تایپ prop های سراسری (Shared Props) که از سمت سرور در
- * App\Http\Middleware\HandleInertiaRequests به کلاینت ارسال می‌شن.
- */
+import { NotificationInputInterface } from "@/components/ui/arc_notification";
 
 //==================================================| User |==================================================\\
 export interface UserSharedPropInterface {
@@ -26,11 +23,8 @@ export interface AuthSharedPropInterface {
 }
 
 //==================================================| Flush |==================================================\\
-/**
- * prop های یکبارمصرف (flash)؛ مقدار notification از session سرور resolve می‌شه
- */
 export interface FlushSharedPropInterface {
-    notification: string | null;
+    notification: NotificationInputInterface | null;
 }
 
 //==================================================| App Shared Props |==================================================\\
